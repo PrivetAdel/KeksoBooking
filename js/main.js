@@ -23,8 +23,6 @@ var PHOTOS = [
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
 ];
 
-var POSITION_X_MIN = 0;
-var POSITION_X_MAX = 980;
 var POSITION_Y_MIN = 130;
 var POSITION_Y_MAX = 630;
 var PIN_WIDTH = 40;
@@ -65,6 +63,9 @@ var getRandomElement = function (array) {
   return array[index];
 };
 
+//  Поиск координаты метки по Х
+var positionXMax = document.querySelector('.map').clientWidth;
+
 var cards = [];
 for (var i = 0; i < 8; i++) {
   cards[i] = {
@@ -75,19 +76,19 @@ for (var i = 0; i < 8; i++) {
     offer: {
       title: 'заголовок предложения',
       address: '600, 350',
-      price: '1000',
+      price: 1000,
       type: getRandomElement(TYPES),
       rooms: getRandomInteger(1, 5),
-      guests: '3',
-      checkin: (Math.floor(Math.random() * 3 + 12)).toString() + ':00',
-      checkout: (Math.floor(Math.random() * 3 + 12)).toString() + ':00',
+      guests: 3,
+      checkin: getRandomInteger(12, 14).toString() + ':00',
+      checkout: getRandomInteger(12, 14).toString() + ':00',
       features: getRandomPrefix(FEATURES),
       description: 'строка с описанием',
       photos: getRandomPrefix(PHOTOS),
     },
 
     location: {
-      x: getRandomInteger(POSITION_X_MIN, POSITION_X_MAX) - (PIN_WIDTH / 2),
+      x: getRandomInteger(0, positionXMax) - (PIN_WIDTH / 2),
       y: getRandomInteger(POSITION_Y_MIN, POSITION_Y_MAX) - PIN_HEIGHT,
     }
   };
