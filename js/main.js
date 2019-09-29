@@ -1,6 +1,6 @@
 'use strict';
 
-var ESC_KEYCODE = 27;
+//  var ESC_KEYCODE = 27;
 var ENTER_KEYCODE = 13;
 
 //  Мокки
@@ -97,7 +97,7 @@ var getTranslateTypes = function (type) {
   }
   return translate;
 };
-window.onload = function() {
+
 // Иконка для features
 var fragmentFeatures = document.createDocumentFragment();
 var featuresPic = document.createElement('li');
@@ -107,7 +107,7 @@ var getFeaturesPic = function (array) {
     pic.classList.add('popup__feature');
     pic.classList.add('popup__feature--' + array[i]);
     fragmentFeatures.appendChild(pic);
-    }
+  }
   return fragmentFeatures;
 };
 
@@ -138,8 +138,8 @@ var connectNounAndNumbers = function (number, array) {
   } else if (number1 === 1) {
     return array[0];
   } else {
-  return array[2];
-  };
+    return array[2];
+  }
 };
 
 var pins = [];
@@ -209,72 +209,169 @@ advertisementElement.querySelector('.popup__avatar').src = pins[0].author.avatar
 fragmentAdds.appendChild(advertisementElement);
 
 var similarAddElement = document.querySelector('.map');
-similarAddElement.appendChild(fragmentAdds);
-document.querySelector('.map').insertBefore(similarAddElement, 'map__filters-container');
+similarAddElement.insertBefore(fragmentAdds, document.querySelector('.map__filters-container'));
 
 
+//  Находим координаты метки и подставляем их в поле Адрес
+var MAIN_PIN_WIDTH = document.querySelector('.map__pin--main').offsetWidth;
+var MAIN_PIN_HEIGHT = document.querySelector('.map__pin--main').offsetHeight;
+var MAIN_PIN_ACTIVE_HEIGHT = document.querySelector('.map__pin--main').offsetHeight + 22;
+var mapPinMain = document.querySelector('.map__pin--main');
+//  Координата по Х
+var mapPinMainPositionX = Math.round(mapPinMain.offsetLeft + (MAIN_PIN_WIDTH / 2));
+//  Координата по Y деактивное состояние
+var mapPinMainPositionY = Math.round(mapPinMain.offsetTop + (MAIN_PIN_HEIGHT / 2));
+//  Координата по Y активное состояние
+var mapPinMainActivePositionY = Math.round(mapPinMain.offsetTop + MAIN_PIN_ACTIVE_HEIGHT);
 
-//  Добавить через DOM-операции fieldset атрибут disabled
-var fieldset = document.querySelectorAll('fieldset');
-for (var i = 0; i < fieldset.length; i++) {
-  fieldset[i].setAttribute('disabled', true);
+//  Определение координат метки в деактивном состоянии
+var addressInput = document.querySelector('input[name = address]');
+addressInput.removeAttribute('value');
+addressInput.value = mapPinMainPositionX + ', ' + mapPinMainPositionY;
+
+//  Функция определения координат метки в активном состоянии
+var onAddressActive = function () {
+  addressInput.value = mapPinMainPositionX + ', ' + mapPinMainActivePositionY;
 };
 
-//  Что с этим делать? Форма с фильтрами .map__filters заблокирована так же, как и форма .ad-form;
+//  Добавляем через DOM-операции fieldset атрибут disabled
+var fieldset = document.querySelectorAll('fieldset');
+for (var l = 0; l < fieldset.length; l++) {
+  fieldset[l].setAttribute('disabled', '');
+}
 
+//  Функция активации страници
 var onPageActive = function () {
   document.querySelector('.map').classList.remove('map--faded');
   document.querySelector('.ad-form').classList.remove('ad-form--disabled');
-  for (var i = 0; i < fieldset.length; i++) {
-    fieldset[i].removeAttribute('disabled');
-  };
+  for (var t = 0; t < fieldset.length; t++) {
+    fieldset[t].removeAttribute('disabled');
+  }
 };
 
+//  Функция деактивации страницы
 var onPageDisabled = function () {
   document.querySelector('.map').classList.add('map--faded');
   document.querySelector('.ad-form').classList.add('ad-form--disabled');
-  for (var i = 0; i < fieldset.length; i++) {
-    fieldset[i].setAttribute('disabled');
-  };
+  for (var t = 0; t < fieldset.length; t++) {
+    fieldset[t].setAttribute('disabled', '');
+  }
 };
 
-var mapPinMain = document.querySelector('map__pin--main');
+//  Обработчик активации страницы по клику
 mapPinMain.addEventListener('mousedown', function () {
   onPageActive();
+  onAddressActive();
 });
 
+//  Обработчик активации страницы по Enter
 mapPinMain.addEventListener('keydown', function (evt) {
   if (evt.keyCode === ENTER_KEYCODE) {
     onPageActive();
+    onAddressActive();
   }
-  //  здесь должен находиться вызов метода, который устанавливает значения поля ввода адреса.
 });
 
-//  Находим координаты метки и подставляем их в поле Адрес, можно ли это сделать сразу в HTML?
-var address = document.querySelector('input[name = address]');
-address.removeAttribute('value');
-address.value = mapPinMain.style.left + '; ' + mapPinMain.style.top;
+//  3.1. Валидация для заголовка
+var titleInput = document.querySelector('input[name="title"]');
+titleInput.addEventListener('invalid', function () {
+  if (titleInput.validity.tooShort) {
+    titleInput.setCustomValidity('Минимальная длина заголовка — 30 символов');
+  } else if (titleInput.validity.tooLong) {
+    titleInput.setCustomValidity('Максимальная длина заголовка — 100 символов');
+  } else if (titleInput.validity.valueMissing) {
+    titleInput.setCustomValidity('Обязательное поле');
+  } else {
+    titleInput.setCustomValidity('');
+  }
+});
 
-//  3.5. Поля «Время заезда» и «Время выезда» синхронизированы: при изменении значения одного поля, во втором выделяется соответствующее ему. Например, если время заезда указано «после 14», то время выезда будет равно «до 14» и наоборот.
+//  В этом задании мы запрограммируем сценарий установки соответствия количества гостей с количеством комнат
+var roomsSelect = document.querySelector('select[name="rooms"]');
+var capacitySelect = document.querySelector('select[name="capacity"]');
 
+roomsSelect.addEventListener('change', function () {
+  if (roomsSelect.value === '1') {
+    capacitySelect[0].setAttribute('disabled', '');
+    capacitySelect[1].setAttribute('disabled', '');
+    capacitySelect[2].removeAttribute('disabled', '');
+    capacitySelect[3].setAttribute('disabled', '');
+  }
+  if (roomsSelect.value === '2') {
+    capacitySelect[0].setAttribute('disabled', '');
+    capacitySelect[1].removeAttribute('disabled', '');
+    capacitySelect[2].removeAttribute('disabled', '');
+    capacitySelect[3].setAttribute('disabled', '');
+  }
+  if (roomsSelect.value === '3') {
+    capacitySelect[0].removeAttribute('disabled', '');
+    capacitySelect[1].removeAttribute('disabled', '');
+    capacitySelect[2].removeAttribute('disabled', '');
+    capacitySelect[3].setAttribute('disabled', '');
+  }
+  if (roomsSelect.value === '100') {
+    capacitySelect[0].setAttribute('disabled', '');
+    capacitySelect[1].setAttribute('disabled', '');
+    capacitySelect[2].setAttribute('disabled', '');
+    capacitySelect[3].removeAttribute('disabled', '');
+  }
+});
+
+//  3.3. Поле «Тип жилья» влияет на минимальное значение поля «Цена за ночь»:
+var type = document.querySelector('select[name="type"]');
+var priceInput = document.querySelector('input[name="price"]');
+priceInput.max = 1000000;
+//  Нормально ли, что в обработчике столько проверок?
+type.addEventListener('change', function () {
+  if (type.value === 'bungalo') {
+    priceInput.setAttribute('min', 0);
+    priceInput.placeholder = 0;
+  }
+  if (type.value === 'flat') {
+    priceInput.setAttribute('min', 1000);
+    priceInput.placeholder = 1000;
+  }
+  if (type.value === 'house') {
+    priceInput.setAttribute('min', 5000);
+    priceInput.placeholder = 5000;
+  }
+  if (type.value === 'palace') {
+    priceInput.setAttribute('min', 10000);
+    priceInput.placeholder = 10000;
+  }
+});
+
+//  3.2. Валидация цены за ночь:
+priceInput.addEventListener('invalid', function () {
+  if (priceInput.validity.rangeOverflow) {
+    priceInput.setCustomValidity('Максимальная цена за ночь — 1 000 000 руб.');
+  } else if (priceInput.validity.typeMismatch) {
+    priceInput.setCustomValidity('Введите число');
+  } else if (priceInput.validity.valueMissing) {
+    priceInput.setCustomValidity('Обязательное поле');
+  } else {
+    priceInput.setCustomValidity('');
+  }
+});
+
+//  3.5. Поля «Время заезда» и «Время выезда» синхронизированы.
 var timeIn = document.querySelector('select[name="timein"]');
 var timeOut = document.querySelector('select[name="timeout"]');
-/*
-timeIn.addEventListener('click', function (evt) {
-  if () {
-    timeOut
-  }
+timeIn.addEventListener('change', function () {
+  timeOut.value = timeIn.value;
 });
-*/
+timeOut.addEventListener('change', function () {
+  timeIn.value = timeOut.value;
+});
 
+//  Обработчик клика по кнопке "очистить"
 var formReset = document.querySelector('.ad-form__reset');
-var onFormResetClick = formReset.addEventListener ('click', function () {
+//  var onFormResetClick =
+formReset.addEventListener('click', function () {
   onPageDisabled();
-  fieldset.reset();
-
-//все заполненные поля возвращются в изначальное состояние, в том числе фильтры;
-//метки похожих объявлений и карточка активного объявления удаляются;
-//метка адреса возвращается в исходное положение;
-//значение поля адреса корректируется соответственно положению метки;
+  fieldset.reset(); //  Сброс в форме
+//  все заполненные поля возвращются в изначальное состояние, в том числе фильтры;
+//  метки похожих объявлений и карточка активного объявления удаляются;
+//  метка адреса возвращается в исходное положение;
+//  значение поля адреса корректируется соответственно положению метки;
 });
-};
