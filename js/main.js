@@ -1,7 +1,13 @@
 'use strict';
 
-//  var ESC_KEYCODE = 27;
+var ESC_KEYCODE = 27;
 var ENTER_KEYCODE = 13;
+var POSITION_Y_MIN = 130;
+var POSITION_Y_MAX = 630;
+var PIN_WIDTH = 40;
+var PIN_HEIGHT = 40;
+var PHOTO_WIDTH = 45;
+var PHOTO_HEIGHT = 40;
 
 //  Мокки
 var TYPES = [
@@ -37,13 +43,6 @@ var GUESTS = [
   'гостей',
   'гостей',
 ];
-
-var POSITION_Y_MIN = 130;
-var POSITION_Y_MAX = 630;
-var PIN_WIDTH = 40;
-var PIN_HEIGHT = 40;
-var PHOTO_WIDTH = 45;
-var PHOTO_HEIGHT = 40;
 
 //  Функция перемешивания массива
 function shuffle(array) {
@@ -141,76 +140,81 @@ var connectNounAndNumbers = function (number, array) {
     return array[2];
   }
 };
+//  1. Напишите функцию для создания массива из 8 сгенерированных JS объектов
+//  Массив объявлений
+var mapCards = [];
+//  var mapCard = {};
+//  var getMapCards = function () {
+  for (var i = 0; i < 8; i++) {
+    mapCards[i] = {
+      author: {
+        avatar: 'img/avatars/user0' + (i + 1).toString() + '.png',
+      },
 
-var pins = [];
-for (var i = 0; i < 8; i++) {
-  pins[i] = {
-    author: {
-      avatar: 'img/avatars/user0' + (i + 1).toString() + '.png',
-    },
+      offer: {
+        title: 'заголовок предложения',
+        address: '600, 350',
+        price: 1000,
+        type: getRandomElement(TYPES),
+        rooms: getRandomInteger(1, 5),
+        guests: 3,
+        checkin: getRandomInteger(12, 14).toString() + ':00',
+        checkout: getRandomInteger(12, 14).toString() + ':00',
+        features: getRandomPrefix(FEATURES),
+        description: 'строка с описанием',
+        photos: getRandomPrefix(PHOTOS),
+      },
 
-    offer: {
-      title: 'заголовок предложения',
-      address: '600, 350',
-      price: 1000,
-      type: getRandomElement(TYPES),
-      rooms: getRandomInteger(1, 5),
-      guests: 3,
-      checkin: getRandomInteger(12, 14).toString() + ':00',
-      checkout: getRandomInteger(12, 14).toString() + ':00',
-      features: getRandomPrefix(FEATURES),
-      description: 'строка с описанием',
-      photos: getRandomPrefix(PHOTOS),
-    },
+      location: {
+        x: getRandomInteger(0, positionXMax) - (PIN_WIDTH / 2),
+        y: getRandomInteger(POSITION_Y_MIN, POSITION_Y_MAX) - PIN_HEIGHT,
+      }
+    };
+  }
+//  console.log(mapCards);
+//  return mapCards;
+//  };
+//  console.log(mapCards);
 
-    location: {
-      x: getRandomInteger(0, positionXMax) - (PIN_WIDTH / 2),
-      y: getRandomInteger(POSITION_Y_MIN, POSITION_Y_MAX) - PIN_HEIGHT,
-    }
-  };
-}
-
-//  3. На основе данных, созданных в первом пункте, создайте DOM-элементы, соответствующие меткам на карте, и заполните их данными из массива. Итоговую разметку метки .map__pin можно взять из шаблона #pin
-
+//  Пины. Находим шаблон и добавляем его на страницу 8 раз.
 var similarPinsTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 var fragmentPins = document.createDocumentFragment();
 
 for (var j = 0; j < 8; j++) {
   var pinsElement = similarPinsTemplate.cloneNode(true);
-  pinsElement.style = 'left: ' + (pins[j].location.x).toString() + 'px; top: ' + (pins[j].location.y).toString() + 'px';
-  pinsElement.querySelector('img').src = pins[j].author.avatar;
-  pinsElement.querySelector('img').alt = pins[j].offer.title;
+  pinsElement.style = 'left: ' + (mapCards[j].location.x).toString() + 'px; top: ' + (mapCards[j].location.y).toString() + 'px';
+  pinsElement.querySelector('img').src = mapCards[j].author.avatar;
+  pinsElement.querySelector('img').alt = mapCards[j].offer.title;
 
   fragmentPins.appendChild(pinsElement);
 }
 
-//  Находим блок куда будем добавлять элементы
 var similarListElement = document.querySelector('.map__pins');
 similarListElement.appendChild(fragmentPins);
 
+//  Карточки объявлений
+var adtTemplate = document.querySelector('#card').content.querySelector('.map__card');
+var fragmentAdt = document.createDocumentFragment();
 
-var advertisementTemplate = document.querySelector('#card').content.querySelector('.map__card');
-var fragmentAdds = document.createDocumentFragment();
+//  for (var a = 0; a < mapCards.length; a++) {
+var adtElement = adtTemplate.cloneNode(true);
+adtElement.querySelector('.popup__title').textContent = mapCards[0].offer.title;
+adtElement.querySelector('.popup__text--address').textContent = mapCards[0].offer.address;
+adtElement.querySelector('.popup__text--price').textContent = mapCards[0].offer.price + '₽/ночь';
+adtElement.querySelector('.popup__type').textContent = getTranslateTypes(mapCards[0].offer.type);
+adtElement.querySelector('.popup__text--capacity').textContent = mapCards[0].offer.rooms + ' ' + connectNounAndNumbers(mapCards[0].offer.rooms, ROOMS) + ' для ' + mapCards[0].offer.guests + ' ' + connectNounAndNumbers(mapCards[0].offer.guests, GUESTS);
+adtElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + mapCards[0].offer.checkin + ', выезд до ' + mapCards[0].offer.checkout;
+adtElement.querySelector('.popup__features').innerHTML = '';
+adtElement.querySelector('.popup__features').appendChild(getFeaturesPic(mapCards[0].offer.features));
+adtElement.querySelector('.popup__description').textContent = mapCards[0].offer.description;
+adtElement.querySelector('.popup__photos').innerHTML = '';
+adtElement.querySelector('.popup__photos').appendChild(getPhotos(mapCards[0].offer.photos));
+adtElement.querySelector('.popup__avatar').src = mapCards[0].author.avatar;
 
-var advertisementElement = advertisementTemplate.cloneNode(true);
-advertisementElement.querySelector('.popup__title').textContent = pins[0].offer.title;
-advertisementElement.querySelector('.popup__text--address').textContent = pins[0].offer.address;
-advertisementElement.querySelector('.popup__text--price').textContent = pins[0].offer.price + '₽/ночь';
-advertisementElement.querySelector('.popup__type').textContent = getTranslateTypes(pins[0].offer.type);
-advertisementElement.querySelector('.popup__text--capacity').textContent = pins[0].offer.rooms + ' ' + connectNounAndNumbers(pins[0].offer.rooms, ROOMS) + ' для ' + pins[0].offer.guests + ' ' + connectNounAndNumbers(pins[0].offer.guests, GUESTS);
-advertisementElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + pins[0].offer.checkin + ', выезд до ' + pins[0].offer.checkout;
-advertisementElement.querySelector('.popup__features').innerHTML = '';
-advertisementElement.querySelector('.popup__features').appendChild(getFeaturesPic(pins[0].offer.features));
-advertisementElement.querySelector('.popup__description').textContent = pins[0].offer.description;
-advertisementElement.querySelector('.popup__photos').innerHTML = '';
-advertisementElement.querySelector('.popup__photos').appendChild(getPhotos(pins[0].offer.photos));
-advertisementElement.querySelector('.popup__avatar').src = pins[0].author.avatar;
+fragmentAdt.appendChild(adtElement);
 
-fragmentAdds.appendChild(advertisementElement);
-
-var similarAddElement = document.querySelector('.map');
-similarAddElement.insertBefore(fragmentAdds, document.querySelector('.map__filters-container'));
-
+var similarAdtElement = document.querySelector('.map');
+similarAdtElement.insertBefore(fragmentAdt, document.querySelector('.map__filters-container'));
 
 //  Находим координаты метки и подставляем их в поле Адрес
 var MAIN_PIN_WIDTH = document.querySelector('.map__pin--main').offsetWidth;
@@ -241,9 +245,13 @@ for (var l = 0; l < fieldset.length; l++) {
 }
 
 //  Функция активации страници
+var pins = document.querySelectorAll('.map__pin');
 var onPageActive = function () {
   document.querySelector('.map').classList.remove('map--faded');
   document.querySelector('.ad-form').classList.remove('ad-form--disabled');
+  for (var p = 0; p < pins.length; p++) {
+    pins[p].classList.remove('hidden');
+  }
   for (var t = 0; t < fieldset.length; t++) {
     fieldset[t].removeAttribute('disabled');
   }
@@ -253,6 +261,10 @@ var onPageActive = function () {
 var onPageDisabled = function () {
   document.querySelector('.map').classList.add('map--faded');
   document.querySelector('.ad-form').classList.add('ad-form--disabled');
+  for (var p = 0; p < pins.length; p++) {
+    pins[p].classList.add('hidden');
+  }
+  mapPinMain.classList.remove('hidden');
   for (var t = 0; t < fieldset.length; t++) {
     fieldset[t].setAttribute('disabled', '');
   }
@@ -289,7 +301,11 @@ titleInput.addEventListener('invalid', function () {
 //  В этом задании мы запрограммируем сценарий установки соответствия количества гостей с количеством комнат
 var roomsSelect = document.querySelector('select[name="rooms"]');
 var capacitySelect = document.querySelector('select[name="capacity"]');
-
+//  Может исходные disabled добавить в разметку?
+capacitySelect[0].setAttribute('disabled', '');
+capacitySelect[1].setAttribute('disabled', '');
+capacitySelect[3].setAttribute('disabled', '');
+//  Как можно сокрасить этот кусок?
 roomsSelect.addEventListener('change', function () {
   if (roomsSelect.value === '1') {
     capacitySelect[0].setAttribute('disabled', '');
@@ -320,22 +336,21 @@ roomsSelect.addEventListener('change', function () {
 //  3.3. Поле «Тип жилья» влияет на минимальное значение поля «Цена за ночь»:
 var type = document.querySelector('select[name="type"]');
 var priceInput = document.querySelector('input[name="price"]');
+//  Может мин и макс добавить в разметку?
 priceInput.max = 1000000;
-//  Нормально ли, что в обработчике столько проверок?
+priceInput.setAttribute('min', 1000);
+//  Можно ли сократить этот кусок?
 type.addEventListener('change', function () {
   if (type.value === 'bungalo') {
     priceInput.setAttribute('min', 0);
     priceInput.placeholder = 0;
-  }
-  if (type.value === 'flat') {
+  } else if (type.value === 'flat') {
     priceInput.setAttribute('min', 1000);
     priceInput.placeholder = 1000;
-  }
-  if (type.value === 'house') {
+  } else if (type.value === 'house') {
     priceInput.setAttribute('min', 5000);
     priceInput.placeholder = 5000;
-  }
-  if (type.value === 'palace') {
+  } else if (type.value === 'palace') {
     priceInput.setAttribute('min', 10000);
     priceInput.placeholder = 10000;
   }
@@ -345,6 +360,18 @@ type.addEventListener('change', function () {
 priceInput.addEventListener('invalid', function () {
   if (priceInput.validity.rangeOverflow) {
     priceInput.setCustomValidity('Максимальная цена за ночь — 1 000 000 руб.');
+  } else if (priceInput.validity.rangeUnderflow) {
+    if (type.value === 'bungalo') {
+      priceInput.setCustomValidity('Минимальная цена за ночь в бунгало 0 руб.');
+    } else if (type.value === 'flat') {
+      priceInput.setCustomValidity('Минимальная цена за ночь в квартире 1 000 руб.');
+    } else if (type.value === 'house') {
+      priceInput.setCustomValidity('Минимальная цена за ночь в доме 5 000 руб.');
+    } else if (type.value === 'palace') {
+      priceInput.setCustomValidity('Минимальная цена за ночь во дворце 10 000 руб.');
+    } else {
+      priceInput.setCustomValidity('');
+    }
   } else if (priceInput.validity.typeMismatch) {
     priceInput.setCustomValidity('Введите число');
   } else if (priceInput.validity.valueMissing) {
@@ -364,13 +391,44 @@ timeOut.addEventListener('change', function () {
   timeIn.value = timeOut.value;
 });
 
+//  Добавьте возможность закрытия карточки с подробной информацией по нажатию клавиши Esc и клике по иконке закрытия;
+
+var card = document.querySelector('.map__card');
+var popupClose = card.querySelector('.popup__close');
+var pin = document.querySelector('.map__pin:not(.map__pin--main)');
+
+var onPopupEscPress = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closePopup();
+  }
+};
+
+var closePopup = function () {
+  card.classList.add('hidden');
+  document.removeEventListener('keydown', onPopupEscPress);
+};
+
+var openPopup = function () {
+  card.classList.remove('hidden');
+  document.addEventListener('keydown', onPopupEscPress);
+};
+
+pin.addEventListener('click', function () {
+  openPopup();
+});
+
+popupClose.addEventListener('click', function () {
+  closePopup();
+});
+
 //  Обработчик клика по кнопке "очистить"
 var formReset = document.querySelector('.ad-form__reset');
 //  var onFormResetClick =
 formReset.addEventListener('click', function () {
   onPageDisabled();
-  fieldset.reset(); //  Сброс в форме
-//  все заполненные поля возвращются в изначальное состояние, в том числе фильтры;
+  document.querySelector('.ad-form').reset();
+  document.querySelector('.map__filters').reset();
+  card.classList.add('hidden');
 //  метки похожих объявлений и карточка активного объявления удаляются;
 //  метка адреса возвращается в исходное положение;
 //  значение поля адреса корректируется соответственно положению метки;
