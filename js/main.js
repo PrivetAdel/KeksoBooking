@@ -227,8 +227,6 @@ var getAdt = function (object) {
 var map = document.querySelector('.map');
 var pins = map.querySelectorAll('.map__pin:not(.map__pin--main)');
 var filters = map.querySelector('.map__filters-container');
-var card = map.querySelector('.map__card');
-var popupClose = map.querySelector('.popup__close');
 
 /*  Почему не работает такой вариант?
   for (var i = 0; i < objects.length; i++) {
@@ -263,24 +261,23 @@ pins[6].addEventListener('click', function () {
 pins[7].addEventListener('click', function () {
   map.insertBefore(getAdt(objects[7]), filters);
 });
-/*
-var onPopupEscPress = function (evt) {
-  if (evt.keyCode === ESC_KEYCODE) {
-    closePopup();
+
+map.addEventListener('click', function toggleDone(evt) {
+  if (!evt.target.matches('button[type="button"]')) {
+    return;
   }
-};
-
-var closePopup = function () {
   map.removeChild(document.querySelector('article'));
-  document.removeEventListener('keydown', onPopupEscPress);
-};
-
-Ошибка - Cannot read property 'addEventListener' of null
-на чем слушать закрытие?
-popupClose.addEventListener('click', function () {
-  closePopup();
 });
-*/
+
+map.addEventListener('keydown', function toggleDone(evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    if (!evt.target.matches('button[type="button"]')) {
+      return;
+    }
+    map.removeChild(document.querySelector('article'));
+  }
+});
+
 //  Находим координаты метки и подставляем их в поле Адрес
 var mapPinMain = document.querySelector('.map__pin--main');
 //  Координата по Х
