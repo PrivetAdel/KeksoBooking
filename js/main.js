@@ -1,7 +1,17 @@
 'use strict';
 
-//  var ESC_KEYCODE = 27;
+//  Константы
+var ESC_KEYCODE = 27;
 var ENTER_KEYCODE = 13;
+var POSITION_Y_MIN = 130;
+var POSITION_Y_MAX = 630;
+var PIN_WIDTH = 40;
+var PIN_HEIGHT = 40;
+var PHOTO_WIDTH = 45;
+var PHOTO_HEIGHT = 40;
+var MAIN_PIN_WIDTH = document.querySelector('.map__pin--main').offsetWidth;
+var MAIN_PIN_HEIGHT = document.querySelector('.map__pin--main').offsetHeight;
+var MAIN_PIN_ACTIVE_HEIGHT = document.querySelector('.map__pin--main').offsetHeight + 22;
 
 //  Мокки
 var TYPES = [
@@ -37,13 +47,6 @@ var GUESTS = [
   'гостей',
   'гостей',
 ];
-
-var POSITION_Y_MIN = 130;
-var POSITION_Y_MAX = 630;
-var PIN_WIDTH = 40;
-var PIN_HEIGHT = 40;
-var PHOTO_WIDTH = 45;
-var PHOTO_HEIGHT = 40;
 
 //  Функция перемешивания массива
 function shuffle(array) {
@@ -142,80 +145,140 @@ var connectNounAndNumbers = function (number, array) {
   }
 };
 
-var pins = [];
-for (var i = 0; i < 8; i++) {
-  pins[i] = {
-    author: {
-      avatar: 'img/avatars/user0' + (i + 1).toString() + '.png',
-    },
+//  1. Напишите функцию для создания массива из 8 сгенерированных JS объектов
+var objects = [];
+var getObjects = function () {
+  for (var i = 0; i < 8; i++) {
+    objects.push({
+      author: {
+        avatar: 'img/avatars/user0' + (i + 1).toString() + '.png',
+      },
 
-    offer: {
-      title: 'заголовок предложения',
-      address: '600, 350',
-      price: 1000,
-      type: getRandomElement(TYPES),
-      rooms: getRandomInteger(1, 5),
-      guests: 3,
-      checkin: getRandomInteger(12, 14).toString() + ':00',
-      checkout: getRandomInteger(12, 14).toString() + ':00',
-      features: getRandomPrefix(FEATURES),
-      description: 'строка с описанием',
-      photos: getRandomPrefix(PHOTOS),
-    },
+      offer: {
+        title: 'заголовок предложения',
+        address: '600, 350',
+        price: 1000,
+        type: getRandomElement(TYPES),
+        rooms: getRandomInteger(1, 5),
+        guests: 3,
+        checkin: getRandomInteger(12, 14).toString() + ':00',
+        checkout: getRandomInteger(12, 14).toString() + ':00',
+        features: getRandomPrefix(FEATURES),
+        description: 'строка с описанием',
+        photos: getRandomPrefix(PHOTOS),
+      },
 
-    location: {
-      x: getRandomInteger(0, positionXMax) - (PIN_WIDTH / 2),
-      y: getRandomInteger(POSITION_Y_MIN, POSITION_Y_MAX) - PIN_HEIGHT,
+      location: {
+        x: getRandomInteger(0, positionXMax) - (PIN_WIDTH / 2),
+        y: getRandomInteger(POSITION_Y_MIN, POSITION_Y_MAX) - PIN_HEIGHT,
+      }
+    });
+  }
+  return objects;
+};
+objects = getObjects();
+
+//  Пины. Создаем дом-элемент.
+var getPin = function (object) {
+  var similarPinsTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
+
+  var pinElement = similarPinsTemplate.cloneNode(true);
+  pinElement.style = 'left: ' + (object.location.x).toString() + 'px; top: ' + (object.location.y).toString() + 'px';
+  pinElement.querySelector('img').src = object.author.avatar;
+  pinElement.querySelector('img').alt = object.offer.title;
+
+  return pinElement;
+};
+//  Находим шаблон и добавляем его на страницу 8 раз.
+var showPins = function () {
+  var similarListElement = document.querySelector('.map__pins');
+  var fragmentPins = document.createDocumentFragment();
+
+  for (var i = 0; i < objects.length; i++) {
+    fragmentPins.appendChild(getPin(objects[i]));
+  }
+  similarListElement.appendChild(fragmentPins);
+
+  return similarListElement;
+};
+showPins();
+
+//  Карточки объявлени. Создаем дом-элемент.
+var getAdt = function (object) {
+  var adtTemplate = document.querySelector('#card').content.querySelector('.map__card');
+  var adtElement = adtTemplate.cloneNode(true);
+
+  adtElement.querySelector('.popup__title').textContent = object.offer.title;
+  adtElement.querySelector('.popup__text--address').textContent = object.offer.address;
+  adtElement.querySelector('.popup__text--price').textContent = object.offer.price + '₽/ночь';
+  adtElement.querySelector('.popup__type').textContent = getTranslateTypes(object.offer.type);
+  adtElement.querySelector('.popup__text--capacity').textContent = object.offer.rooms + ' ' + connectNounAndNumbers(object.offer.rooms, ROOMS) + ' для ' + object.offer.guests + ' ' + connectNounAndNumbers(object.offer.guests, GUESTS);
+  adtElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + object.offer.checkin + ', выезд до ' + object.offer.checkout;
+  adtElement.querySelector('.popup__features').innerHTML = '';
+  adtElement.querySelector('.popup__features').appendChild(getFeaturesPic(object.offer.features));
+  adtElement.querySelector('.popup__description').textContent = object.offer.description;
+  adtElement.querySelector('.popup__photos').innerHTML = '';
+  adtElement.querySelector('.popup__photos').appendChild(getPhotos(object.offer.photos));
+  adtElement.querySelector('.popup__avatar').src = object.author.avatar;
+
+  return adtElement;
+};
+
+var map = document.querySelector('.map');
+var pins = map.querySelectorAll('.map__pin:not(.map__pin--main)');
+var filters = map.querySelector('.map__filters-container');
+
+/*  Почему не работает такой вариант?
+  for (var i = 0; i < objects.length; i++) {
+    pins[i].addEventListener('click', function () {
+      map.insertBefore(getAdt(objects[i]), filters);
+      document.addEventListener('keydown', onPopupEscPress);
+    });
+  }
+*/
+
+pins[0].addEventListener('click', function () {
+  map.insertBefore(getAdt(objects[0]), filters);
+});
+pins[1].addEventListener('click', function () {
+  map.insertBefore(getAdt(objects[1]), filters);
+});
+pins[2].addEventListener('click', function () {
+  map.insertBefore(getAdt(objects[2]), filters);
+});
+pins[3].addEventListener('click', function () {
+  map.insertBefore(getAdt(objects[3]), filters);
+});
+pins[4].addEventListener('click', function () {
+  map.insertBefore(getAdt(objects[4]), filters);
+});
+pins[5].addEventListener('click', function () {
+  map.insertBefore(getAdt(objects[5]), filters);
+});
+pins[6].addEventListener('click', function () {
+  map.insertBefore(getAdt(objects[6]), filters);
+});
+pins[7].addEventListener('click', function () {
+  map.insertBefore(getAdt(objects[7]), filters);
+});
+
+map.addEventListener('click', function toggleDone(evt) {
+  if (!evt.target.matches('button[type="button"]')) {
+    return;
+  }
+  map.removeChild(document.querySelector('article'));
+});
+
+map.addEventListener('keydown', function toggleDone(evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    if (!evt.target.matches('button[type="button"]')) {
+      return;
     }
-  };
-}
-
-//  3. На основе данных, созданных в первом пункте, создайте DOM-элементы, соответствующие меткам на карте, и заполните их данными из массива. Итоговую разметку метки .map__pin можно взять из шаблона #pin
-
-var similarPinsTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
-var fragmentPins = document.createDocumentFragment();
-
-for (var j = 0; j < 8; j++) {
-  var pinsElement = similarPinsTemplate.cloneNode(true);
-  pinsElement.style = 'left: ' + (pins[j].location.x).toString() + 'px; top: ' + (pins[j].location.y).toString() + 'px';
-  pinsElement.querySelector('img').src = pins[j].author.avatar;
-  pinsElement.querySelector('img').alt = pins[j].offer.title;
-
-  fragmentPins.appendChild(pinsElement);
-}
-
-//  Находим блок куда будем добавлять элементы
-var similarListElement = document.querySelector('.map__pins');
-similarListElement.appendChild(fragmentPins);
-
-
-var advertisementTemplate = document.querySelector('#card').content.querySelector('.map__card');
-var fragmentAdds = document.createDocumentFragment();
-
-var advertisementElement = advertisementTemplate.cloneNode(true);
-advertisementElement.querySelector('.popup__title').textContent = pins[0].offer.title;
-advertisementElement.querySelector('.popup__text--address').textContent = pins[0].offer.address;
-advertisementElement.querySelector('.popup__text--price').textContent = pins[0].offer.price + '₽/ночь';
-advertisementElement.querySelector('.popup__type').textContent = getTranslateTypes(pins[0].offer.type);
-advertisementElement.querySelector('.popup__text--capacity').textContent = pins[0].offer.rooms + ' ' + connectNounAndNumbers(pins[0].offer.rooms, ROOMS) + ' для ' + pins[0].offer.guests + ' ' + connectNounAndNumbers(pins[0].offer.guests, GUESTS);
-advertisementElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + pins[0].offer.checkin + ', выезд до ' + pins[0].offer.checkout;
-advertisementElement.querySelector('.popup__features').innerHTML = '';
-advertisementElement.querySelector('.popup__features').appendChild(getFeaturesPic(pins[0].offer.features));
-advertisementElement.querySelector('.popup__description').textContent = pins[0].offer.description;
-advertisementElement.querySelector('.popup__photos').innerHTML = '';
-advertisementElement.querySelector('.popup__photos').appendChild(getPhotos(pins[0].offer.photos));
-advertisementElement.querySelector('.popup__avatar').src = pins[0].author.avatar;
-
-fragmentAdds.appendChild(advertisementElement);
-
-var similarAddElement = document.querySelector('.map');
-similarAddElement.insertBefore(fragmentAdds, document.querySelector('.map__filters-container'));
-
+    map.removeChild(document.querySelector('article'));
+  }
+});
 
 //  Находим координаты метки и подставляем их в поле Адрес
-var MAIN_PIN_WIDTH = document.querySelector('.map__pin--main').offsetWidth;
-var MAIN_PIN_HEIGHT = document.querySelector('.map__pin--main').offsetHeight;
-var MAIN_PIN_ACTIVE_HEIGHT = document.querySelector('.map__pin--main').offsetHeight + 22;
 var mapPinMain = document.querySelector('.map__pin--main');
 //  Координата по Х
 var mapPinMainPositionX = Math.round(mapPinMain.offsetLeft + (MAIN_PIN_WIDTH / 2));
@@ -241,9 +304,13 @@ for (var l = 0; l < fieldset.length; l++) {
 }
 
 //  Функция активации страници
+var mapPins = document.querySelectorAll('.map__pin');
 var onPageActive = function () {
   document.querySelector('.map').classList.remove('map--faded');
   document.querySelector('.ad-form').classList.remove('ad-form--disabled');
+  for (var p = 0; p < mapPins.length; p++) {
+    mapPins[p].classList.remove('hidden');
+  }
   for (var t = 0; t < fieldset.length; t++) {
     fieldset[t].removeAttribute('disabled');
   }
@@ -253,6 +320,10 @@ var onPageActive = function () {
 var onPageDisabled = function () {
   document.querySelector('.map').classList.add('map--faded');
   document.querySelector('.ad-form').classList.add('ad-form--disabled');
+  for (var p = 0; p < pins.length; p++) {
+    pins[p].classList.add('hidden');
+  }
+  mapPinMain.classList.remove('hidden');
   for (var t = 0; t < fieldset.length; t++) {
     fieldset[t].setAttribute('disabled', '');
   }
@@ -289,7 +360,6 @@ titleInput.addEventListener('invalid', function () {
 //  В этом задании мы запрограммируем сценарий установки соответствия количества гостей с количеством комнат
 var roomsSelect = document.querySelector('select[name="rooms"]');
 var capacitySelect = document.querySelector('select[name="capacity"]');
-
 roomsSelect.addEventListener('change', function () {
   if (roomsSelect.value === '1') {
     capacitySelect[0].setAttribute('disabled', '');
@@ -320,22 +390,17 @@ roomsSelect.addEventListener('change', function () {
 //  3.3. Поле «Тип жилья» влияет на минимальное значение поля «Цена за ночь»:
 var type = document.querySelector('select[name="type"]');
 var priceInput = document.querySelector('input[name="price"]');
-priceInput.max = 1000000;
-//  Нормально ли, что в обработчике столько проверок?
 type.addEventListener('change', function () {
   if (type.value === 'bungalo') {
     priceInput.setAttribute('min', 0);
     priceInput.placeholder = 0;
-  }
-  if (type.value === 'flat') {
+  } else if (type.value === 'flat') {
     priceInput.setAttribute('min', 1000);
     priceInput.placeholder = 1000;
-  }
-  if (type.value === 'house') {
+  } else if (type.value === 'house') {
     priceInput.setAttribute('min', 5000);
     priceInput.placeholder = 5000;
-  }
-  if (type.value === 'palace') {
+  } else if (type.value === 'palace') {
     priceInput.setAttribute('min', 10000);
     priceInput.placeholder = 10000;
   }
@@ -345,8 +410,18 @@ type.addEventListener('change', function () {
 priceInput.addEventListener('invalid', function () {
   if (priceInput.validity.rangeOverflow) {
     priceInput.setCustomValidity('Максимальная цена за ночь — 1 000 000 руб.');
-  } else if (priceInput.validity.typeMismatch) {
-    priceInput.setCustomValidity('Введите число');
+  } else if (priceInput.validity.rangeUnderflow) {
+    if (type.value === 'bungalo') {
+      priceInput.setCustomValidity('Минимальная цена за ночь в бунгало 0 руб.');
+    } else if (type.value === 'flat') {
+      priceInput.setCustomValidity('Минимальная цена за ночь в квартире 1 000 руб.');
+    } else if (type.value === 'house') {
+      priceInput.setCustomValidity('Минимальная цена за ночь в доме 5 000 руб.');
+    } else if (type.value === 'palace') {
+      priceInput.setCustomValidity('Минимальная цена за ночь во дворце 10 000 руб.');
+    } else {
+      priceInput.setCustomValidity('');
+    }
   } else if (priceInput.validity.valueMissing) {
     priceInput.setCustomValidity('Обязательное поле');
   } else {
@@ -369,8 +444,8 @@ var formReset = document.querySelector('.ad-form__reset');
 //  var onFormResetClick =
 formReset.addEventListener('click', function () {
   onPageDisabled();
-  fieldset.reset(); //  Сброс в форме
-//  все заполненные поля возвращются в изначальное состояние, в том числе фильтры;
+  document.querySelector('.ad-form').reset();
+  document.querySelector('.map__filters').reset();
 //  метки похожих объявлений и карточка активного объявления удаляются;
 //  метка адреса возвращается в исходное положение;
 //  значение поля адреса корректируется соответственно положению метки;
