@@ -161,6 +161,7 @@
     }
   });
 
+  // Что значит запись function toggleDone(evt)?
   map.addEventListener('click', function toggleDone(evt) {
     if (!evt.target.matches('button[type="button"]')) {
       return;
@@ -168,6 +169,7 @@
     map.removeChild(document.querySelector('article'));
   });
 
+  //  Где и как правильно погасить обработчик по Esc?
   map.addEventListener('keydown', function toggleDone(evt) {
     if (evt.keyCode === window.util.escKeycode) {
       if (!evt.target.matches('button[type="button"]')) {
@@ -175,5 +177,95 @@
       }
       map.removeChild(document.querySelector('article'));
     }
+  });
+
+  // В этом задании мы решим задачу перемещения главной метки по карте
+  var mapPinMain = map.querySelector('.map__pin--main');
+
+  mapPinMain.addEventListener('mousedown', function (evt) {
+    evt.preventDefault();
+
+    var startCoords = {
+      x: evt.clientX,
+      y: evt.clientY
+    };
+
+    var onMouseMove = function (moveEvt) {
+      moveEvt.preventDefault();
+
+      var shift = {
+        x: startCoords.x - moveEvt.clientX,
+        y: startCoords.y - moveEvt.clientY
+      };
+
+      startCoords = {
+        x: moveEvt.clientX,
+        y: moveEvt.clientY
+      };
+
+
+      var getMapPinMainTop = function () {
+        var mapPinMainTop = mapPinMain.offsetTop - shift.y;
+        if (mapPinMainTop > (window.util.positionYMax - window.util.mainPinActiveHeight)) {
+          mapPinMainTop = (window.util.positionYMax - window.util.mainPinActiveHeight);
+        }
+        if (mapPinMainTop < (window.util.positionYMin - window.util.mainPinActiveHeight)) {
+          mapPinMainTop = (window.util.positionYMin - window.util.mainPinActiveHeight);
+        }
+        return mapPinMainTop;
+      };
+
+      var getMapPinMainLeft = function () {
+        var mapPinMainLeft = mapPinMain.offsetLeft - shift.x;
+        if (mapPinMainLeft > (positionXMax - (window.util.mainPinWidth / 2))) {
+          mapPinMainLeft = Math.round(positionXMax - (window.util.mainPinWidth / 2));
+        }
+        if (mapPinMainLeft <= -(window.util.mainPinWidth / 2)) {
+          mapPinMainLeft = Math.round(-window.util.mainPinWidth / 2);
+        }
+        return mapPinMainLeft;
+      };
+
+
+      mapPinMain.style.top = getMapPinMainTop() + 'px';
+      mapPinMain.style.left = getMapPinMainLeft() + 'px';
+
+      var getAdress = function () {
+        var mapPinMainPositionX = Math.round((mapPinMain.offsetLeft - shift.x) + (window.util.mainPinWidth / 2));
+        var mapPinMainPositionY = Math.round((mapPinMain.offsetTop - shift.y) + window.util.mainPinActiveHeight);
+
+        var addressInput = document.querySelector('input[name = address]');
+        addressInput.removeAttribute('value');
+        addressInput.value = mapPinMainPositionX + ', ' + mapPinMainPositionY;
+
+        return addressInput.value;
+      };
+      getAdress();
+    };
+
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+
+      var getAdress = function () {
+        var mapPinMainPositionX = Math.round(mapPinMain.offsetLeft + (window.util.mainPinWidth / 2));
+        var mapPinMainPositionY = Math.round(mapPinMain.offsetTop + window.util.mainPinActiveHeight);
+
+        var addressInput = document.querySelector('input[name = address]');
+        addressInput.removeAttribute('value');
+        addressInput.value = mapPinMainPositionX + ', ' + mapPinMainPositionY;
+
+        return addressInput.value;
+      };
+      getAdress();
+      /*
+      Учтите, расчёт координат метки и их запись в поле адреса должна дублироваться и в обработчике mouseup, потому что в некоторых случаях пользователь может нажать мышь на метке, но никуда её не переместить. Напишите универсальную функцию расчёта координат, чтобы избавиться от дублирования кода.
+      Правильная ли реализация?
+      */
+    };
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
   });
 })();

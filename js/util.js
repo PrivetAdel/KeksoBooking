@@ -12,7 +12,9 @@
   var PHOTO_HEIGHT = 40;
   var MAIN_PIN_WIDTH = document.querySelector('.map__pin--main').offsetWidth;
   var MAIN_PIN_HEIGHT = document.querySelector('.map__pin--main').offsetHeight;
-  var MAIN_PIN_ACTIVE_HEIGHT = document.querySelector('.map__pin--main').offsetHeight + 22;
+  var MAIN_PIN_ACTIVE_HEIGHT = document.querySelector('.map__pin--main').offsetHeight + 16;
+  var MAIN_PIN_START_POSITION_X = document.querySelector('.map__pin--main').offsetLeft + 'px';
+  var MAIN_PIN_START_POSITION_Y = document.querySelector('.map__pin--main').offsetTop + 'px';
 
   //  Мокки
   var TYPES = [
@@ -155,6 +157,8 @@
     mainPinWidth: MAIN_PIN_WIDTH,
     mainPinHeight: MAIN_PIN_HEIGHT,
     mainPinActiveHeight: MAIN_PIN_ACTIVE_HEIGHT,
+    mainPinStartPositionX: MAIN_PIN_START_POSITION_X,
+    mainPinStartPositionY: MAIN_PIN_START_POSITION_Y,
 
     typesArray: TYPES,
     featuresArray: FEATURES,

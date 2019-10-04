@@ -22,8 +22,8 @@
 
   //  Добавляем через DOM-операции fieldset атрибут disabled
   var fieldset = document.querySelectorAll('fieldset');
-  for (var l = 0; l < fieldset.length; l++) {
-    fieldset[l].setAttribute('disabled', '');
+  for (var j = 0; j < fieldset.length; j++) {
+    fieldset[j].setAttribute('disabled', '');
   }
 
   //  Функция активации страници
@@ -34,9 +34,10 @@
     for (var p = 0; p < mapPins.length; p++) {
       mapPins[p].classList.remove('hidden');
     }
-    for (var t = 0; t < fieldset.length; t++) {
-      fieldset[t].removeAttribute('disabled');
+    for (var i = 0; i < fieldset.length; i++) {
+      fieldset[i].removeAttribute('disabled');
     }
+    onAddressActive();
   };
 
   //  Функция деактивации страницы
@@ -56,7 +57,6 @@
   //  Обработчик активации страницы по клику
   mapPinMain.addEventListener('mousedown', function () {
     onPageActive();
-    onAddressActive();
   });
 
   //  Обработчик активации страницы по Enter
@@ -150,6 +150,8 @@
       }
     } else if (priceInput.validity.valueMissing) {
       priceInput.setCustomValidity('Обязательное поле');
+    } else if (priceInput.validity.typeMismatch) {
+      priceInput.setCustomValidity('Введите число');
     } else {
       priceInput.setCustomValidity('');
     }
@@ -168,8 +170,8 @@
   //  Обработчик клика по кнопке "очистить"
   var formReset = document.querySelector('.ad-form__reset');
   var map = document.querySelector('.map');
-  //  var onFormResetClick =
-  formReset.addEventListener('click', function () {
+  var card = document.querySelector('article');
+  var onFormResetClick = function () {
     onPageDisabled();
     document.querySelector('.ad-form').reset();
     document.querySelector('.map__filters').reset();
@@ -178,9 +180,16 @@
     capacitySelect[2].removeAttribute('disabled', '');
     capacitySelect[3].removeAttribute('selected', '');
     capacitySelect[3].setAttribute('disabled', '');
-    map.removeChild(document.querySelector('article'));
-  //  метки похожих объявлений и карточка активного объявления удаляются;
-  //  метка адреса возвращается в исходное положение;
-  //  значение поля адреса корректируется соответственно положению метки;
+    if (card !== null) {
+      map.removeChild(card);
+    }
+    addressInput.removeAttribute('value');
+    addressInput.value = mapPinMainPositionX + ', ' + mapPinMainPositionY;
+    mapPinMain.style.top = window.util.mainPinStartPositionY;
+    mapPinMain.style.left = window.util.mainPinStartPositionX;
+  };
+
+  formReset.addEventListener('click', function () {
+    onFormResetClick();
   });
 })();
