@@ -108,6 +108,8 @@
       capacitySelect[1].setAttribute('disabled', '');
       capacitySelect[2].setAttribute('disabled', '');
       capacitySelect[3].removeAttribute('disabled', '');
+      capacitySelect[3].setAttribute('selected', '');
+      capacitySelect[2].removeAttribute('selected', '');
     }
   });
 
@@ -172,6 +174,10 @@
     document.querySelector('.ad-form').reset();
     document.querySelector('.map__filters').reset();
     priceInput.placeholder = 1000;
+    capacitySelect[2].setAttribute('selected', '');
+    capacitySelect[2].removeAttribute('disabled', '');
+    capacitySelect[3].removeAttribute('selected', '');
+    capacitySelect[3].setAttribute('disabled', '');
     map.removeChild(document.querySelector('article'));
   //  метки похожих объявлений и карточка активного объявления удаляются;
   //  метка адреса возвращается в исходное положение;
