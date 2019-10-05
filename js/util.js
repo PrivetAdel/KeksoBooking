@@ -16,6 +16,13 @@
   var MAIN_PIN_START_POSITION_X = document.querySelector('.map__pin--main').offsetLeft + 'px';
   var MAIN_PIN_START_POSITION_Y = document.querySelector('.map__pin--main').offsetTop + 'px';
 
+  //  Переменные
+  var mapPinMain = document.querySelector('.map__pin--main');
+  var fieldsets = document.querySelectorAll('fieldset');
+  var addressInput = document.querySelector('input[name = address]');
+  var mapPinMainPositionX = Math.round(mapPinMain.offsetLeft + (MAIN_PIN_WIDTH / 2));
+  var mapPinMainPositionY = Math.round(mapPinMain.offsetTop + (MAIN_PIN_HEIGHT / 2));
+
   //  Мокки
   var TYPES = [
     'palace',
@@ -50,6 +57,13 @@
     'гостей',
     'гостей',
   ];
+
+  var PRICE = {
+    'bungalo': 0,
+    'flat': 1000,
+    'house': 5000,
+    'palace': 10000,
+  };
 
   //  Функция перемешивания массива
   var shuffle = function (array) {
@@ -160,11 +174,19 @@
     mainPinStartPositionX: MAIN_PIN_START_POSITION_X,
     mainPinStartPositionY: MAIN_PIN_START_POSITION_Y,
 
+    mapPinMain: mapPinMain,
+    fieldsets: fieldsets,
+    addressInput: addressInput,
+    mapPinMainPositionX: mapPinMainPositionX,
+    mapPinMainPositionY: mapPinMainPositionY,
+
+
     typesArray: TYPES,
     featuresArray: FEATURES,
     photosArray: PHOTOS,
     roomsArray: ROOMS,
     guestsArray: GUESTS,
+    priceObject: PRICE,
 
     shuffle: shuffle,
     getRandomPrefix: getRandomPrefix,
