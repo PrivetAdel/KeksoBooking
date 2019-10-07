@@ -5,13 +5,6 @@
   //  Подставляем координаты главной метки в деактивном состоянии в поле Адрес
   window.util.addressInput.removeAttribute('value');
   window.util.addressInput.value = window.util.mapPinMainPositionX + ', ' + window.util.mapPinMainPositionY;
-  //  Координата главной метки по Y активное состояние
-  var mapPinMainActivePositionY = Math.round(window.util.mapPinMain.offsetTop + window.util.mainPinActiveHeight);
-
-  //  Функция определения координат главной метки в активном состоянии
-  var onAddressActive = function () {
-    window.util.addressInput.value = window.util.mapPinMainPositionX + ', ' + mapPinMainActivePositionY;
-  };
 
   //  Максимальная координата меток по Х
   var positionXMax = document.querySelector('.map').clientWidth;
@@ -32,7 +25,6 @@
     window.util.fieldsets.forEach(function (element, i) {
       window.util.fieldsets[i].removeAttribute('disabled', '');
     });
-    onAddressActive();
     window.util.mapPinMain.removeEventListener('mousedown', onPageActive);
   };
 
