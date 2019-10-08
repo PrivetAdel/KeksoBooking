@@ -1,9 +1,45 @@
 'use strict';
 
 (function () {
-  //  Поиск координаты метки по Х
+  //  Находим координаты главной метки и подставляем их в поле Адрес
+  //  Подставляем координаты главной метки в деактивном состоянии в поле Адрес
+  window.util.addressInput.removeAttribute('value');
+  window.util.addressInput.value = window.util.mapPinMainPositionX + ', ' + window.util.mapPinMainPositionY;
+
+  //  Максимальная координата меток по Х
   var positionXMax = document.querySelector('.map').clientWidth;
-  //  1. Напишите функцию для создания массива из 8 сгенерированных JS объектов
+
+  //  Добавляем через DOM-операции fieldset атрибут disabled
+  window.util.fieldsets.forEach(function (element, i) {
+    window.util.fieldsets[i].setAttribute('disabled', '');
+  });
+
+  //  Функция активации страници
+  var onPageActive = function () {
+    var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+    document.querySelector('.map').classList.remove('map--faded');
+    document.querySelector('.ad-form').classList.remove('ad-form--disabled');
+    pins.forEach(function (element, i) {
+      pins[i].classList.remove('hidden');
+    });
+    window.util.fieldsets.forEach(function (element, i) {
+      window.util.fieldsets[i].removeAttribute('disabled', '');
+    });
+    window.util.mapPinMain.removeEventListener('mousedown', onPageActive);
+  };
+
+  //  Обработчик активации страницы по клику
+  window.util.mapPinMain.addEventListener('mousedown', function () {
+    onPageActive();
+  });
+  //  Обработчик активации страницы по Enter
+  window.util.mapPinMain.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === window.util.enterKeycode) {
+      onPageActive();
+    }
+  });
+
+  //  Функция создания массива из 8 сгенерированных JS объектов
   var objects = [];
   var getObjects = function () {
     for (var i = 0; i < 8; i++) {
@@ -47,7 +83,7 @@
 
     return pinElement;
   };
-  //  Находим шаблон и добавляем его на страницу 8 раз.
+  //  Находим шаблон пина и добавляем его на страницу 8 раз.
   var showPins = function () {
     var similarListElement = document.querySelector('.map__pins');
     var fragmentPins = document.createDocumentFragment();
@@ -61,7 +97,7 @@
   };
   showPins();
 
-  //  Карточки объявлени. Создаем дом-элемент.
+  //  Карточка объявления Popup. Создаем дом-элемент.
   var getAdt = function (object) {
     var adtTemplate = document.querySelector('#card').content.querySelector('.map__card');
     var adtElement = adtTemplate.cloneNode(true);
@@ -81,99 +117,117 @@
 
     return adtElement;
   };
-
+  // Открытие карточки Popup
   var map = document.querySelector('.map');
-  var pins = map.querySelectorAll('.map__pin:not(.map__pin--main)');
-  var filters = map.querySelector('.map__filters-container');
-
-  /*  Почему не работает такой вариант?
-    for (var i = 0; i < objects.length; i++) {
-      pins[i].addEventListener('click', function () {
-        map.insertBefore(getAdt(objects[i]), filters);
-        document.addEventListener('keydown', onPopupEscPress);
-      });
-    }
-  */
-
-  pins[0].addEventListener('click', function () {
-    map.insertBefore(getAdt(objects[0]), filters);
+  var filters = document.querySelector('.map__filters-container');
+  var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+  // Открытие карточки Popup по клику
+  objects.forEach(function (element, i) {
+    pins[i].addEventListener('click', function () {
+      map.insertBefore(getAdt(objects[i]), filters);
+      document.addEventListener('keydown', onPopupEscPress);
+    });
   });
-  pins[1].addEventListener('click', function () {
-    map.insertBefore(getAdt(objects[1]), filters);
-  });
-  pins[2].addEventListener('click', function () {
-    map.insertBefore(getAdt(objects[2]), filters);
-  });
-  pins[3].addEventListener('click', function () {
-    map.insertBefore(getAdt(objects[3]), filters);
-  });
-  pins[4].addEventListener('click', function () {
-    map.insertBefore(getAdt(objects[4]), filters);
-  });
-  pins[5].addEventListener('click', function () {
-    map.insertBefore(getAdt(objects[5]), filters);
-  });
-  pins[6].addEventListener('click', function () {
-    map.insertBefore(getAdt(objects[6]), filters);
-  });
-  pins[7].addEventListener('click', function () {
-    map.insertBefore(getAdt(objects[7]), filters);
+  // Открытие карточки Popup по Enter
+  objects.forEach(function (element, i) {
+    pins[i].addEventListener('keydown', function (evt) {
+      if (evt.keyCode === window.util.enterKeycode) {
+        map.insertBefore(getAdt(objects[0]), filters);
+      }
+      document.addEventListener('keydown', onPopupEscPress);
+    });
   });
 
-  pins[0].addEventListener('keydown', function (evt) {
-    if (evt.keyCode === window.util.enterKeycode) {
-      map.insertBefore(getAdt(objects[0]), filters);
-    }
-  });
-  pins[1].addEventListener('keydown', function (evt) {
-    if (evt.keyCode === window.util.enterKeycode) {
-      map.insertBefore(getAdt(objects[1]), filters);
-    }
-  });
-  pins[2].addEventListener('keydown', function (evt) {
-    if (evt.keyCode === window.util.enterKeycode) {
-      map.insertBefore(getAdt(objects[2]), filters);
-    }
-  });
-  pins[3].addEventListener('keydown', function (evt) {
-    if (evt.keyCode === window.util.enterKeycode) {
-      map.insertBefore(getAdt(objects[3]), filters);
-    }
-  });
-  pins[4].addEventListener('keydown', function (evt) {
-    if (evt.keyCode === window.util.enterKeycode) {
-      map.insertBefore(getAdt(objects[4]), filters);
-    }
-  });
-  pins[5].addEventListener('keydown', function (evt) {
-    if (evt.keyCode === window.util.enterKeycode) {
-      map.insertBefore(getAdt(objects[5]), filters);
-    }
-  });
-  pins[6].addEventListener('keydown', function (evt) {
-    if (evt.keyCode === window.util.enterKeycode) {
-      map.insertBefore(getAdt(objects[6]), filters);
-    }
-  });
-  pins[7].addEventListener('keydown', function (evt) {
-    if (evt.keyCode === window.util.enterKeycode) {
-      map.insertBefore(getAdt(objects[7]), filters);
-    }
-  });
-
-  map.addEventListener('click', function toggleDone(evt) {
-    if (!evt.target.matches('button[type="button"]')) {
-      return;
-    }
-    map.removeChild(document.querySelector('article'));
-  });
-
-  map.addEventListener('keydown', function toggleDone(evt) {
+  //  Функция закрытия карточки Popup по Esc
+  var onPopupEscPress = function (evt) {
     if (evt.keyCode === window.util.escKeycode) {
       if (!evt.target.matches('button[type="button"]')) {
         return;
       }
       map.removeChild(document.querySelector('article'));
     }
+  };
+  // Закрытие карточки Popup по клику
+  map.addEventListener('click', function (evt) {
+    if (!evt.target.matches('button[type="button"]')) {
+      return;
+    }
+    map.removeChild(document.querySelector('article'));
+    map.removeEventListener('keydown', onPopupEscPress);
+  });
+  //  Обработчик закрытия карточки Popup по Esc
+  map.addEventListener('keydown', onPopupEscPress);
+
+  // Перемещение главной метки по карте
+  window.util.mapPinMain.addEventListener('mousedown', function (evt) {
+    evt.preventDefault();
+
+    var startCoords = {
+      x: evt.clientX,
+      y: evt.clientY
+    };
+
+    var getAdress = function (shift) {
+      var mapPinMainPositionX = Math.round((window.util.mapPinMain.offsetLeft - (shift ? shift.x : 0)) + (window.util.mainPinWidth / 2));
+      var mapPinMainPositionY = Math.round((window.util.mapPinMain.offsetTop - (shift ? shift.y : 0)) + window.util.mainPinActiveHeight);
+
+      window.util.addressInput.removeAttribute('value');
+      window.util.addressInput.value = mapPinMainPositionX + ', ' + mapPinMainPositionY;
+
+      return window.util.addressInput.value;
+    };
+
+    var onMouseMove = function (moveEvt) {
+      moveEvt.preventDefault();
+
+      var shift = {
+        x: startCoords.x - moveEvt.clientX,
+        y: startCoords.y - moveEvt.clientY
+      };
+
+      startCoords = {
+        x: moveEvt.clientX,
+        y: moveEvt.clientY
+      };
+
+      var getMapPinMainTop = function () {
+        var mapPinMainTop = window.util.mapPinMain.offsetTop - shift.y;
+        if (mapPinMainTop > (window.util.positionYMax - window.util.mainPinActiveHeight)) {
+          mapPinMainTop = (window.util.positionYMax - window.util.mainPinActiveHeight);
+        }
+        if (mapPinMainTop < (window.util.positionYMin - window.util.mainPinActiveHeight)) {
+          mapPinMainTop = (window.util.positionYMin - window.util.mainPinActiveHeight);
+        }
+        return mapPinMainTop;
+      };
+
+      var getMapPinMainLeft = function () {
+        var mapPinMainLeft = window.util.mapPinMain.offsetLeft - shift.x;
+        if (mapPinMainLeft > (positionXMax - (window.util.mainPinWidth / 2))) {
+          mapPinMainLeft = Math.round(positionXMax - (window.util.mainPinWidth / 2));
+        }
+        if (mapPinMainLeft <= -(window.util.mainPinWidth / 2)) {
+          mapPinMainLeft = Math.round(-window.util.mainPinWidth / 2);
+        }
+        return mapPinMainLeft;
+      };
+
+
+      window.util.mapPinMain.style.top = getMapPinMainTop() + 'px';
+      window.util.mapPinMain.style.left = getMapPinMainLeft() + 'px';
+
+      getAdress();
+    };
+
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+
+      getAdress();
+    };
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
   });
 })();
