@@ -67,7 +67,7 @@
     var errorTemplate = document.querySelector('#error').content.querySelector('.error');
     var errorElement = errorTemplate.cloneNode(true);
 
-    document.main.insertAdjacentElement('afterbegin', errorElement);
+    document.querySelector('main').insertAdjacentElement('afterbegin', errorElement);
   };
 
   window.load(showPins, errorHandler);
@@ -109,27 +109,30 @@
     });
   };
   window.load(showCards, errorHandler);
-  //  Не работает открытие по Enter почему?
   // Открытие карточки Popup по Enter
   var showCardsOnEnter = function (cards) {
     var mapPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
     cards.forEach(function (element, i) {
       mapPins[i].addEventListener('keydown', function (evt) {
         if (evt.keyCode === window.util.enterKeycode) {
+          evt.preventDefault();
+          if (map.querySelector('article') !== null) {
+            map.removeChild(map.querySelector('article'));
+          }
           map.insertBefore(getAdt(cards[i]), filters);
         }
       });
     });
   };
-  window.load(showCardsOnEnter);
+  window.load(showCardsOnEnter, errorHandler);
 
   //  Функция закрытия карточки Popup по Esc
   var onPopupEscPress = function (evt) {
     if (evt.keyCode === window.util.escKeycode) {
-      // if (!evt.target.matches('button[type="button"]')) {
-      //   return;
-      // }
-      map.removeChild(document.querySelector('article'));
+      if (map.querySelector('article') !== null) {
+        map.removeChild(map.querySelector('article'));
+      }
+      return;
     }
   };
   // Закрытие карточки Popup по клику

@@ -91,10 +91,10 @@
   });
 
   //  Функция деактивации страницы
-  var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
   var onPageDisabled = function () {
     document.querySelector('.map').classList.add('map--faded');
     document.querySelector('.ad-form').classList.add('ad-form--disabled');
+    var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
     pins.forEach(function (element, i) {
       pins[i].classList.add('hidden');
     });
