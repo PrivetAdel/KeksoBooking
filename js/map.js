@@ -50,7 +50,7 @@
 
     return pinElement;
   };
-  //  Находим шаблон пина и добавляем его на страницу 8 раз.
+  //  Находим шаблон пина и добавляем его на страницу
   var showPins = function (pins) {
     var similarListElement = document.querySelector('.map__pins');
     var fragmentPins = document.createDocumentFragment();
@@ -92,10 +92,10 @@
 
     return adtElement;
   };
+
   // Открытие карточки Popup
   var map = document.querySelector('.map');
   var filters = document.querySelector('.map__filters-container');
-
   // Открытие карточки Popup по клику
   var showCards = function (cards) {
     var mapPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
