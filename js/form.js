@@ -15,36 +15,43 @@
     }
   });
 
+  var roomsToCapacity = {
+    1: 1,
+    2: 1,
+    3: 1,
+    100: 0,
+  };
+
   //  В этом задании мы запрограммируем сценарий установки соответствия количества гостей с количеством комнат
   var roomsSelect = document.querySelector('select[name="rooms"]');
   var capacitySelect = document.querySelector('select[name="capacity"]');
   roomsSelect.addEventListener('change', function () {
-    if (roomsSelect.value === '1') {
-      capacitySelect[0].setAttribute('disabled', '');
-      capacitySelect[1].setAttribute('disabled', '');
-      capacitySelect[2].removeAttribute('disabled', '');
-      capacitySelect[3].setAttribute('disabled', '');
-    }
-    if (roomsSelect.value === '2') {
-      capacitySelect[0].setAttribute('disabled', '');
-      capacitySelect[1].removeAttribute('disabled', '');
-      capacitySelect[2].removeAttribute('disabled', '');
-      capacitySelect[3].setAttribute('disabled', '');
-    }
-    if (roomsSelect.value === '3') {
-      capacitySelect[0].removeAttribute('disabled', '');
-      capacitySelect[1].removeAttribute('disabled', '');
-      capacitySelect[2].removeAttribute('disabled', '');
-      capacitySelect[3].setAttribute('disabled', '');
-    }
-    if (roomsSelect.value === '100') {
-      capacitySelect[0].setAttribute('disabled', '');
-      capacitySelect[1].setAttribute('disabled', '');
-      capacitySelect[2].setAttribute('disabled', '');
-      capacitySelect[3].removeAttribute('disabled', '');
-      capacitySelect[3].setAttribute('selected', '');
-      capacitySelect[2].removeAttribute('selected', '');
-    }
+    capacitySelect.setAttribute('selected', roomsToCapacity[roomsSelect.value]);
+    //   capacitySelect[0].setAttribute('disabled', '');
+    //   capacitySelect[1].setAttribute('disabled', '');
+    //   capacitySelect[2].removeAttribute('disabled', '');
+    //   capacitySelect[3].setAttribute('disabled', '');
+    // }
+    // if (roomsSelect.value === '2') {
+    //   capacitySelect[0].setAttribute('disabled', '');
+    //   capacitySelect[1].removeAttribute('disabled', '');
+    //   capacitySelect[2].removeAttribute('disabled', '');
+    //   capacitySelect[3].setAttribute('disabled', '');
+    // }
+    // if (roomsSelect.value === '3') {
+    //   capacitySelect[0].removeAttribute('disabled', '');
+    //   capacitySelect[1].removeAttribute('disabled', '');
+    //   capacitySelect[2].removeAttribute('disabled', '');
+    //   capacitySelect[3].setAttribute('disabled', '');
+    // }
+    // if (roomsSelect.value === '100') {
+    //   capacitySelect[0].setAttribute('disabled', '');
+    //   capacitySelect[1].setAttribute('disabled', '');
+    //   capacitySelect[2].setAttribute('disabled', '');
+    //   capacitySelect[3].removeAttribute('disabled', '');
+    //   capacitySelect[3].setAttribute('selected', '');
+    //   capacitySelect[2].removeAttribute('selected', '');
+    // }
   });
 
   //  3.3. Поле «Тип жилья» влияет на минимальное значение поля «Цена за ночь»:
@@ -131,7 +138,7 @@
 
   //  Закрытие сообщения об успешной отправке формы или об ошибке
   var closeMessage = function (message) {
-    document.querySelector('main').removeChild(message);
+    message.remove();
   };
 
   //  Функция показывающая сообщение об успешной отправке формы
@@ -155,7 +162,7 @@
   };
 
   //  Функция показывающая сообщение об ошибке при отправке формы
-  var showErrorMessage = function () {
+  window.showErrorMessage = function () {
     var errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
     var errorMessageElement = errorMessageTemplate.cloneNode(true);
 
@@ -177,19 +184,10 @@
   //  Отправка данных формы на сервер
   var form = document.querySelector('.ad-form');
   form.addEventListener('submit', function (evt) {
+    evt.preventDefault();
     window.save(new FormData(form), function () {
       onFormResetClick();
       showSuccessMessage();
     });
-    evt.preventDefault();
-  });
-
-  //  Ошибка при отправке данных формы на сервер
-  form.addEventListener('error', function (evt) {
-    window.save(new FormData(form), function () {
-      showErrorMessage();
-    });
-    evt.preventDefault();
-  });
-
+  }, window.showErrorMessage);
 })();

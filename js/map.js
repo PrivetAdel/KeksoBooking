@@ -21,7 +21,7 @@
     pinElement.querySelector('img').src = object.author.avatar;
     pinElement.querySelector('img').alt = object.offer.title;
 
-    // Открываем карточку попап по клику или по Enter
+    // Открываем карточку объявления Popup по клику или по Enter
     pinElement.addEventListener('click', function () {
       var map = document.querySelector('.map');
       var filters = document.querySelector('.map__filters-container');
@@ -53,24 +53,24 @@
     adtElement.querySelector('.popup__avatar').src = object.author.avatar;
 
     var map = document.querySelector('.map');
-    //  Функция закрытия карточки Popup по Esc
+    //  Функция закрытия карточки объявления Popup по Esc
     var onPopupEscPress = function (evt) {
       if (evt.keyCode === window.util.escKeycode) {
         if (adtElement !== null) {
-          map.removeChild(adtElement);
+          adtElement.remove();
         }
         return;
       }
     };
-    // Закрытие карточки Popup по клику
+    // Закрытие карточки объявления Popup по клику
     map.addEventListener('click', function (evt) {
       if (!evt.target.matches('button[type="button"]')) {
         return;
       }
-      map.removeChild(adtElement);
+      adtElement.remove();
       map.removeEventListener('keydown', onPopupEscPress);
     });
-    //  Обработчик закрытия карточки Popup по Esc
+    //  Обработчик закрытия карточки объявления Popup по Esc
     document.addEventListener('keydown', onPopupEscPress);
 
     return adtElement;
@@ -89,27 +89,21 @@
     return similarListElement;
   };
 
-  var errorHandler = function () {
-    var errorTemplate = document.querySelector('#error').content.querySelector('.error');
-    var errorElement = errorTemplate.cloneNode(true);
-
-    document.querySelector('main').insertAdjacentElement('afterbegin', errorElement);
-  };
-
   //  Функция активации страници
   var onPageActive = function () {
+    if (!document.querySelector('.map').classList.contains('map--faded')) {
+      return;
+    }
     document.querySelector('.map').classList.remove('map--faded');
     document.querySelector('.ad-form').classList.remove('ad-form--disabled');
     window.util.fieldsets.forEach(function (element, i) {
       window.util.fieldsets[i].removeAttribute('disabled', '');
     });
-    window.util.mapPinMain.removeEventListener('mousedown', onPageActive);
-    window.load(showPins, errorHandler);
+    window.load(showPins, window.showErrorMessage);
   };
   //  Обработчик активации страницы по клику
-  window.util.mapPinMain.addEventListener('mousedown', function () {
-    onPageActive();
-  });
+  window.util.mapPinMain.addEventListener('mousedown', onPageActive);
+
   //  Обработчик активации страницы по Enter
   window.util.mapPinMain.addEventListener('keydown', function (evt) {
     if (evt.keyCode === window.util.enterKeycode) {
