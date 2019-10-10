@@ -15,6 +15,14 @@
     }
   });
 
+  // var roomsToCapacity = {
+  //   '1':
+  //   '2':
+  //   '3':
+  //   '100':
+  // };
+
+
   //  В этом задании мы запрограммируем сценарий установки соответствия количества гостей с количеством комнат
   var roomsSelect = document.querySelector('select[name="rooms"]');
   var capacitySelect = document.querySelector('select[name="capacity"]');
@@ -131,7 +139,7 @@
 
   //  Закрытие сообщения об успешной отправке формы или об ошибке
   var closeMessage = function (message) {
-    document.querySelector('main').removeChild(message);
+    message.remove();
   };
 
   //  Функция показывающая сообщение об успешной отправке формы
@@ -155,7 +163,7 @@
   };
 
   //  Функция показывающая сообщение об ошибке при отправке формы
-  var showErrorMessage = function () {
+  window.showErrorMessage = function () {
     var errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
     var errorMessageElement = errorMessageTemplate.cloneNode(true);
 
@@ -177,19 +185,11 @@
   //  Отправка данных формы на сервер
   var form = document.querySelector('.ad-form');
   form.addEventListener('submit', function (evt) {
+    evt.preventDefault();
     window.save(new FormData(form), function () {
       onFormResetClick();
       showSuccessMessage();
-    });
-    evt.preventDefault();
-  });
-
-  //  Ошибка при отправке данных формы на сервер
-  form.addEventListener('error', function (evt) {
-    window.save(new FormData(form), function () {
-      showErrorMessage();
-    });
-    evt.preventDefault();
+    }, window.showErrorMessage());
   });
 
 })();
