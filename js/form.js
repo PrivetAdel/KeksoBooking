@@ -119,7 +119,7 @@
     if (map.querySelector('.popup') !== null) {
       map.removeChild(map.querySelector('.popup'));
     }
-    window.util.addressInput.removeAttribute('value');
+    //  window.util.addressInput.removeAttribute('value');
     window.util.addressInput.value = window.util.mapPinMainPositionX + ', ' + window.util.mapPinMainPositionY;
     window.util.mapPinMain.style.top = window.util.mainPinStartPositionY;
     window.util.mapPinMain.style.left = window.util.mainPinStartPositionX;
@@ -146,7 +146,7 @@
       closeMessage(successMessage);
     });
 
-    successMessage.addEventListener('keydown', function (evt) {
+    document.addEventListener('keydown', function (evt) {
       if (evt.keyCode === window.util.escKeycode) {
         closeMessage(successMessage);
         evt.preventDefault();

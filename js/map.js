@@ -1,42 +1,15 @@
 'use strict';
 
 (function () {
-  //  Находим координаты главной метки и подставляем их в поле Адрес
   //  Подставляем координаты главной метки в деактивном состоянии в поле Адрес
-  window.util.addressInput.removeAttribute('value');
   window.util.addressInput.value = window.util.mapPinMainPositionX + ', ' + window.util.mapPinMainPositionY;
 
-  //  Максимальная координата меток по Х
+  //  Максимальная координата меток по Х, ширина карты
   var positionXMax = document.querySelector('.map').clientWidth;
 
   //  Добавляем через DOM-операции fieldset атрибут disabled
   window.util.fieldsets.forEach(function (element, i) {
     window.util.fieldsets[i].setAttribute('disabled', '');
-  });
-
-  //  Функция активации страници
-  var onPageActive = function () {
-    var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-    document.querySelector('.map').classList.remove('map--faded');
-    document.querySelector('.ad-form').classList.remove('ad-form--disabled');
-    pins.forEach(function (element, i) {
-      pins[i].classList.remove('hidden');
-    });
-    window.util.fieldsets.forEach(function (element, i) {
-      window.util.fieldsets[i].removeAttribute('disabled', '');
-    });
-    window.util.mapPinMain.removeEventListener('mousedown', onPageActive);
-  };
-
-  //  Обработчик активации страницы по клику
-  window.util.mapPinMain.addEventListener('mousedown', function () {
-    onPageActive();
-  });
-  //  Обработчик активации страницы по Enter
-  window.util.mapPinMain.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === window.util.enterKeycode) {
-      onPageActive();
-    }
   });
 
   //  Пины. Создаем дом-элемент.
@@ -48,8 +21,61 @@
     pinElement.querySelector('img').src = object.author.avatar;
     pinElement.querySelector('img').alt = object.offer.title;
 
+    // Открываем карточку попап по клику или по Enter
+    pinElement.addEventListener('click', function () {
+      var map = document.querySelector('.map');
+      var filters = document.querySelector('.map__filters-container');
+      if (map.querySelector('article') !== null) {
+        map.removeChild(map.querySelector('article'));
+      }
+      map.insertBefore(getAdt(object), filters);
+    });
+
     return pinElement;
   };
+
+  //  Карточка объявления Popup. Создаем дом-элемент.
+  var getAdt = function (object) {
+    var adtTemplate = document.querySelector('#card').content.querySelector('.map__card');
+    var adtElement = adtTemplate.cloneNode(true);
+
+    adtElement.querySelector('.popup__title').textContent = object.offer.title;
+    adtElement.querySelector('.popup__text--address').textContent = object.offer.address;
+    adtElement.querySelector('.popup__text--price').textContent = object.offer.price + '₽/ночь';
+    adtElement.querySelector('.popup__type').textContent = window.util.getTranslateTypes(object.offer.type);
+    adtElement.querySelector('.popup__text--capacity').textContent = object.offer.rooms + ' ' + window.util.connectNounAndNumbers(object.offer.rooms, window.util.roomsArray) + ' для ' + object.offer.guests + ' ' + window.util.connectNounAndNumbers(object.offer.guests, window.util.guestsArray);
+    adtElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + object.offer.checkin + ', выезд до ' + object.offer.checkout;
+    adtElement.querySelector('.popup__features').innerHTML = '';
+    adtElement.querySelector('.popup__features').appendChild(window.util.getFeaturesPic(object.offer.features));
+    adtElement.querySelector('.popup__description').textContent = object.offer.description;
+    adtElement.querySelector('.popup__photos').innerHTML = '';
+    adtElement.querySelector('.popup__photos').appendChild(window.util.getPhotos(object.offer.photos));
+    adtElement.querySelector('.popup__avatar').src = object.author.avatar;
+
+    var map = document.querySelector('.map');
+    //  Функция закрытия карточки Popup по Esc
+    var onPopupEscPress = function (evt) {
+      if (evt.keyCode === window.util.escKeycode) {
+        if (adtElement !== null) {
+          map.removeChild(adtElement);
+        }
+        return;
+      }
+    };
+    // Закрытие карточки Popup по клику
+    map.addEventListener('click', function (evt) {
+      if (!evt.target.matches('button[type="button"]')) {
+        return;
+      }
+      map.removeChild(adtElement);
+      map.removeEventListener('keydown', onPopupEscPress);
+    });
+    //  Обработчик закрытия карточки Popup по Esc
+    document.addEventListener('keydown', onPopupEscPress);
+
+    return adtElement;
+  };
+
   //  Находим шаблон пина и добавляем его на страницу
   var showPins = function (pins) {
     var similarListElement = document.querySelector('.map__pins');
@@ -70,81 +96,26 @@
     document.querySelector('main').insertAdjacentElement('afterbegin', errorElement);
   };
 
-  window.load(showPins, errorHandler);
-
-  //  Карточка объявления Popup. Создаем дом-элемент.
-  var getAdt = function (object) {
-    var adtTemplate = document.querySelector('#card').content.querySelector('.map__card');
-    var adtElement = adtTemplate.cloneNode(true);
-
-    adtElement.querySelector('.popup__title').textContent = object.offer.title;
-    adtElement.querySelector('.popup__text--address').textContent = object.offer.address;
-    adtElement.querySelector('.popup__text--price').textContent = object.offer.price + '₽/ночь';
-    adtElement.querySelector('.popup__type').textContent = window.util.getTranslateTypes(object.offer.type);
-    adtElement.querySelector('.popup__text--capacity').textContent = object.offer.rooms + ' ' + window.util.connectNounAndNumbers(object.offer.rooms, window.util.roomsArray) + ' для ' + object.offer.guests + ' ' + window.util.connectNounAndNumbers(object.offer.guests, window.util.guestsArray);
-    adtElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + object.offer.checkin + ', выезд до ' + object.offer.checkout;
-    adtElement.querySelector('.popup__features').innerHTML = '';
-    adtElement.querySelector('.popup__features').appendChild(window.util.getFeaturesPic(object.offer.features));
-    adtElement.querySelector('.popup__description').textContent = object.offer.description;
-    adtElement.querySelector('.popup__photos').innerHTML = '';
-    adtElement.querySelector('.popup__photos').appendChild(window.util.getPhotos(object.offer.photos));
-    adtElement.querySelector('.popup__avatar').src = object.author.avatar;
-
-    return adtElement;
-  };
-
-  // Открытие карточки Popup
-  var map = document.querySelector('.map');
-  var filters = document.querySelector('.map__filters-container');
-  // Открытие карточки Popup по клику
-  var showCards = function (cards) {
-    var mapPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-    cards.forEach(function (element, i) {
-      mapPins[i].addEventListener('click', function () {
-        if (map.querySelector('article') !== null) {
-          map.removeChild(map.querySelector('article'));
-        }
-        map.insertBefore(getAdt(cards[i]), filters);
-      });
+  //  Функция активации страници
+  var onPageActive = function () {
+    document.querySelector('.map').classList.remove('map--faded');
+    document.querySelector('.ad-form').classList.remove('ad-form--disabled');
+    window.util.fieldsets.forEach(function (element, i) {
+      window.util.fieldsets[i].removeAttribute('disabled', '');
     });
+    window.util.mapPinMain.removeEventListener('mousedown', onPageActive);
+    window.load(showPins, errorHandler);
   };
-  window.load(showCards, errorHandler);
-  // Открытие карточки Popup по Enter
-  var showCardsOnEnter = function (cards) {
-    var mapPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-    cards.forEach(function (element, i) {
-      mapPins[i].addEventListener('keydown', function (evt) {
-        if (evt.keyCode === window.util.enterKeycode) {
-          evt.preventDefault();
-          if (map.querySelector('article') !== null) {
-            map.removeChild(map.querySelector('article'));
-          }
-          map.insertBefore(getAdt(cards[i]), filters);
-        }
-      });
-    });
-  };
-  window.load(showCardsOnEnter, errorHandler);
-
-  //  Функция закрытия карточки Popup по Esc
-  var onPopupEscPress = function (evt) {
-    if (evt.keyCode === window.util.escKeycode) {
-      if (map.querySelector('article') !== null) {
-        map.removeChild(map.querySelector('article'));
-      }
-      return;
-    }
-  };
-  // Закрытие карточки Popup по клику
-  map.addEventListener('click', function (evt) {
-    if (!evt.target.matches('button[type="button"]')) {
-      return;
-    }
-    map.removeChild(document.querySelector('article'));
-    map.removeEventListener('keydown', onPopupEscPress);
+  //  Обработчик активации страницы по клику
+  window.util.mapPinMain.addEventListener('mousedown', function () {
+    onPageActive();
   });
-  //  Обработчик закрытия карточки Popup по Esc
-  document.addEventListener('keydown', onPopupEscPress);
+  //  Обработчик активации страницы по Enter
+  window.util.mapPinMain.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === window.util.enterKeycode) {
+      onPageActive();
+    }
+  });
 
   // Перемещение главной метки по карте
   window.util.mapPinMain.addEventListener('mousedown', function (evt) {
