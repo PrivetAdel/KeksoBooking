@@ -189,7 +189,7 @@
     window.save(new FormData(form), function () {
       onFormResetClick();
       showSuccessMessage();
-    }, window.showErrorMessage());
+    }, window.showErrorMessage);
   });
 
 })();
