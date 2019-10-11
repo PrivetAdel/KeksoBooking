@@ -77,7 +77,9 @@
   };
 
   //  Находим шаблон пина и добавляем его на страницу
+  window.receivedData = {};
   var showPins = function (pins) {
+    window.receivedData = pins;
     var similarListElement = document.querySelector('.map__pins');
     var fragmentPins = document.createDocumentFragment();
 
@@ -111,6 +113,8 @@
     }
   });
 
+  console.log(window.receivedData);
+
   // Перемещение главной метки по карте
   window.util.mapPinMain.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
@@ -142,7 +146,7 @@
         x: moveEvt.clientX,
         y: moveEvt.clientY
       };
-
+      //  Фиксация граничных координат движения главной метки
       var getMapPinMainTop = function () {
         var mapPinMainTop = window.util.mapPinMain.offsetTop - shift.y;
         if (mapPinMainTop > (window.util.positionYMax - window.util.mainPinActiveHeight)) {

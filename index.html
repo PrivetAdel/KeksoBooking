@@ -144,10 +144,10 @@
         <fieldset class="ad-form__element">
           <label class="ad-form__label" for="capacity">Количество мест</label>
           <select id="capacity" name="capacity">
-            <option value="3">для 3 гостей</option>
-            <option value="2">для 2 гостей</option>
-            <option value="1">для 1 гостя</option>
-            <option value="0">не для гостей</option>
+            <option value="3" disabled>для 3 гостей</option>
+            <option value="2" disabled>для 2 гостей</option>
+            <option value="1" selected>для 1 гостя</option>
+            <option value="0" disabled>не для гостей</option>
           </select>
         </fieldset>
         <fieldset class="ad-form__element ad-form__element--wide features">
@@ -230,7 +230,7 @@
 
   <!-- Метка объявления -->
   <template id="pin">
-    <button type="button" class="map__pin" style="left: 200px; top: 400px;" tabindex="0"><img src="img/avatars/user07.png" width="40" height="40" draggable="false" alt="Метка объявления"></button>
+    <button type="button" class="map__pin" style="left: 200px; top: 400px;"><img src="img/avatars/user07.png" width="40" height="40" draggable="false" alt="Метка объявления"></button>
   </template>
 
   <!-- Сообщение об успешном создании объявления -->
