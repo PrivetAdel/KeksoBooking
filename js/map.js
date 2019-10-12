@@ -12,6 +12,16 @@
     window.util.fieldsets[i].setAttribute('disabled', '');
   });
 
+  //  Записываем данные с сервера в переменную
+  var receivedData = [];
+  var getData = function (data) {
+    for (var i = 0; i < data.length; i++) {
+      receivedData.push(data[i]);
+    }
+  };
+  window.backend.load(getData, window.showErrorMessage);
+  // console.log(receivedData);
+
   //  Пины. Создаем дом-элемент.
   var getPin = function (object) {
     var similarPinsTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
@@ -25,7 +35,7 @@
     pinElement.addEventListener('click', function () {
       var map = document.querySelector('.map');
       var filters = document.querySelector('.map__filters-container');
-      if (map.querySelector('article') !== null) {
+      if (map.querySelector('article')) {
         map.removeChild(map.querySelector('article'));
       }
       map.insertBefore(getAdt(object), filters);
@@ -77,13 +87,11 @@
   };
 
   //  Находим шаблон пина и добавляем его на страницу
-  window.receivedData = {};
   var showPins = function (pins) {
-    window.receivedData = pins;
     var similarListElement = document.querySelector('.map__pins');
     var fragmentPins = document.createDocumentFragment();
 
-    for (var i = 0; i < pins.length; i++) {
+    for (var i = 0; i < window.util.maxPinsCount; i++) {
       fragmentPins.appendChild(getPin(pins[i]));
     }
     similarListElement.appendChild(fragmentPins);
@@ -101,7 +109,7 @@
     window.util.fieldsets.forEach(function (element, i) {
       window.util.fieldsets[i].removeAttribute('disabled', '');
     });
-    window.load(showPins, window.showErrorMessage);
+    showPins(receivedData);
   };
   //  Обработчик активации страницы по клику
   window.util.mapPinMain.addEventListener('mousedown', onPageActive);
@@ -112,8 +120,6 @@
       onPageActive();
     }
   });
-
-  console.log(window.receivedData);
 
   // Перемещение главной метки по карте
   window.util.mapPinMain.addEventListener('mousedown', function (evt) {
@@ -187,4 +193,10 @@
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
   });
+
+  window.map = {
+    receivedData: receivedData,
+    showPins: showPins,
+  };
+
 })();
