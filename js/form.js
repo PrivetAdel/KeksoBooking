@@ -97,6 +97,14 @@
     timeIn.value = timeOut.value;
   });
 
+  //  Функция удаления пинов
+  var removePins = function () {
+    var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+    pins.forEach(function (element, i) {
+      pins[i].remove();
+    });
+  }
+
   //  Функция деактивации страницы
   var map = document.querySelector('.map');
   var getDisabledPage = function () {
@@ -104,10 +112,7 @@
     document.querySelector('.ad-form').reset();
     document.querySelector('.map__filters').reset();
     document.querySelector('.ad-form').classList.add('ad-form--disabled');
-    var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-    pins.forEach(function (element, i) {
-      pins[i].classList.add('hidden');
-    });
+    removePins();
     window.util.fieldsets.forEach(function (element, i) {
       window.util.fieldsets[i].setAttribute('disabled', '');
     });
@@ -186,4 +191,8 @@
         window.showErrorMessage
     );
   });
+
+  window.form = {
+    removePins: removePins,
+  }
 })();

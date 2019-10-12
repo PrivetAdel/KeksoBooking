@@ -20,7 +20,7 @@
     }
   };
   window.backend.load(getData, window.showErrorMessage);
-  // console.log(receivedData);
+  console.log(receivedData);
 
   //  Пины. Создаем дом-элемент.
   var getPin = function (object) {
