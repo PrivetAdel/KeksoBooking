@@ -20,7 +20,6 @@
     }
   };
   window.backend.load(getData, window.showErrorMessage);
-  console.log(receivedData);
 
   //  Пины. Создаем дом-элемент.
   var getPin = function (object) {
@@ -35,9 +34,7 @@
     pinElement.addEventListener('click', function () {
       var map = document.querySelector('.map');
       var filters = document.querySelector('.map__filters-container');
-      if (map.querySelector('article')) {
-        map.removeChild(map.querySelector('article'));
-      }
+      window.form.removePopupCards();
       map.insertBefore(getAdt(object), filters);
     });
 
@@ -66,9 +63,7 @@
     //  Функция закрытия карточки объявления Popup по Esc
     var onPopupEscPress = function (evt) {
       if (evt.keyCode === window.util.escKeycode) {
-        if (adtElement !== null) {
-          adtElement.remove();
-        }
+        window.form.removePopupCards();
         return;
       }
     };
@@ -77,7 +72,7 @@
       if (!evt.target.matches('button[type="button"]')) {
         return;
       }
-      adtElement.remove();
+      window.form.removePopupCards();
       map.removeEventListener('keydown', onPopupEscPress);
     });
     //  Обработчик закрытия карточки объявления Popup по Esc
@@ -91,7 +86,9 @@
     var similarListElement = document.querySelector('.map__pins');
     var fragmentPins = document.createDocumentFragment();
 
-    for (var i = 0; i < window.util.maxPinsCount; i++) {
+    var pinsCount = (pins.length > window.util.maxPinsCount) ? window.util.maxPinsCount : pins.length;
+
+    for (var i = 0; i < pinsCount; i++) {
       fragmentPins.appendChild(getPin(pins[i]));
     }
     similarListElement.appendChild(fragmentPins);

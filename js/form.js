@@ -103,7 +103,14 @@
     pins.forEach(function (element, i) {
       pins[i].remove();
     });
-  }
+  };
+
+  //  Функция закрытия карточек объявления Popup
+  var removePopupCards = function () {
+    if (map.querySelector('.popup')) {
+      map.removeChild(map.querySelector('.popup'));
+    }
+  };
 
   //  Функция деактивации страницы
   var map = document.querySelector('.map');
@@ -113,14 +120,12 @@
     document.querySelector('.map__filters').reset();
     document.querySelector('.ad-form').classList.add('ad-form--disabled');
     removePins();
+    removePopupCards();
     window.util.fieldsets.forEach(function (element, i) {
       window.util.fieldsets[i].setAttribute('disabled', '');
     });
     window.util.mapPinMain.classList.remove('hidden');
     priceInput.placeholder = 1000;
-    if (map.querySelector('.popup')) {
-      map.removeChild(map.querySelector('.popup'));
-    }
     window.util.addressInput.value = window.util.mapPinMainPositionX + ', ' + window.util.mapPinMainPositionY;
     window.util.mapPinMain.style.top = window.util.mainPinStartPositionY;
     window.util.mapPinMain.style.left = window.util.mainPinStartPositionX;
@@ -194,5 +199,6 @@
 
   window.form = {
     removePins: removePins,
-  }
+    removePopupCards: removePopupCards,
+  };
 })();
