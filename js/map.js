@@ -1,42 +1,15 @@
 'use strict';
 
 (function () {
-  //  Находим координаты главной метки и подставляем их в поле Адрес
   //  Подставляем координаты главной метки в деактивном состоянии в поле Адрес
-  window.util.addressInput.removeAttribute('value');
   window.util.addressInput.value = window.util.mapPinMainPositionX + ', ' + window.util.mapPinMainPositionY;
 
-  //  Максимальная координата меток по Х
+  //  Максимальная координата меток по Х, ширина карты
   var positionXMax = document.querySelector('.map').clientWidth;
 
   //  Добавляем через DOM-операции fieldset атрибут disabled
   window.util.fieldsets.forEach(function (element, i) {
     window.util.fieldsets[i].setAttribute('disabled', '');
-  });
-
-  //  Функция активации страници
-  var onPageActive = function () {
-    var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-    document.querySelector('.map').classList.remove('map--faded');
-    document.querySelector('.ad-form').classList.remove('ad-form--disabled');
-    pins.forEach(function (element, i) {
-      pins[i].classList.remove('hidden');
-    });
-    window.util.fieldsets.forEach(function (element, i) {
-      window.util.fieldsets[i].removeAttribute('disabled', '');
-    });
-    window.util.mapPinMain.removeEventListener('mousedown', onPageActive);
-  };
-
-  //  Обработчик активации страницы по клику
-  window.util.mapPinMain.addEventListener('mousedown', function () {
-    onPageActive();
-  });
-  //  Обработчик активации страницы по Enter
-  window.util.mapPinMain.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === window.util.enterKeycode) {
-      onPageActive();
-    }
   });
 
   //  Пины. Создаем дом-элемент.
@@ -48,29 +21,18 @@
     pinElement.querySelector('img').src = object.author.avatar;
     pinElement.querySelector('img').alt = object.offer.title;
 
+    // Открываем карточку объявления Popup по клику или по Enter
+    pinElement.addEventListener('click', function () {
+      var map = document.querySelector('.map');
+      var filters = document.querySelector('.map__filters-container');
+      if (map.querySelector('article') !== null) {
+        map.removeChild(map.querySelector('article'));
+      }
+      map.insertBefore(getAdt(object), filters);
+    });
+
     return pinElement;
   };
-  //  Находим шаблон пина и добавляем его на страницу 8 раз.
-  var showPins = function (pins) {
-    var similarListElement = document.querySelector('.map__pins');
-    var fragmentPins = document.createDocumentFragment();
-
-    for (var i = 0; i < pins.length; i++) {
-      fragmentPins.appendChild(getPin(pins[i]));
-    }
-    similarListElement.appendChild(fragmentPins);
-
-    return similarListElement;
-  };
-
-  var errorHandler = function () {
-    var errorTemplate = document.querySelector('#error').content.querySelector('.error');
-    var errorElement = errorTemplate.cloneNode(true);
-
-    document.querySelector('main').insertAdjacentElement('afterbegin', errorElement);
-  };
-
-  window.load(showPins, errorHandler);
 
   //  Карточка объявления Popup. Создаем дом-элемент.
   var getAdt = function (object) {
@@ -90,61 +52,64 @@
     adtElement.querySelector('.popup__photos').appendChild(window.util.getPhotos(object.offer.photos));
     adtElement.querySelector('.popup__avatar').src = object.author.avatar;
 
+    var map = document.querySelector('.map');
+    //  Функция закрытия карточки объявления Popup по Esc
+    var onPopupEscPress = function (evt) {
+      if (evt.keyCode === window.util.escKeycode) {
+        if (adtElement !== null) {
+          adtElement.remove();
+        }
+        return;
+      }
+    };
+    // Закрытие карточки объявления Popup по клику
+    map.addEventListener('click', function (evt) {
+      if (!evt.target.matches('button[type="button"]')) {
+        return;
+      }
+      adtElement.remove();
+      map.removeEventListener('keydown', onPopupEscPress);
+    });
+    //  Обработчик закрытия карточки объявления Popup по Esc
+    document.addEventListener('keydown', onPopupEscPress);
+
     return adtElement;
   };
-  // Открытие карточки Popup
-  var map = document.querySelector('.map');
-  var filters = document.querySelector('.map__filters-container');
 
-  // Открытие карточки Popup по клику
-  var showCards = function (cards) {
-    var mapPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-    cards.forEach(function (element, i) {
-      mapPins[i].addEventListener('click', function () {
-        if (map.querySelector('article') !== null) {
-          map.removeChild(map.querySelector('article'));
-        }
-        map.insertBefore(getAdt(cards[i]), filters);
-      });
-    });
-  };
-  window.load(showCards, errorHandler);
-  // Открытие карточки Popup по Enter
-  var showCardsOnEnter = function (cards) {
-    var mapPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-    cards.forEach(function (element, i) {
-      mapPins[i].addEventListener('keydown', function (evt) {
-        if (evt.keyCode === window.util.enterKeycode) {
-          evt.preventDefault();
-          if (map.querySelector('article') !== null) {
-            map.removeChild(map.querySelector('article'));
-          }
-          map.insertBefore(getAdt(cards[i]), filters);
-        }
-      });
-    });
-  };
-  window.load(showCardsOnEnter, errorHandler);
+  //  Находим шаблон пина и добавляем его на страницу
+  var showPins = function (pins) {
+    var similarListElement = document.querySelector('.map__pins');
+    var fragmentPins = document.createDocumentFragment();
 
-  //  Функция закрытия карточки Popup по Esc
-  var onPopupEscPress = function (evt) {
-    if (evt.keyCode === window.util.escKeycode) {
-      if (map.querySelector('article') !== null) {
-        map.removeChild(map.querySelector('article'));
-      }
+    for (var i = 0; i < pins.length; i++) {
+      fragmentPins.appendChild(getPin(pins[i]));
+    }
+    similarListElement.appendChild(fragmentPins);
+
+    return similarListElement;
+  };
+
+  //  Функция активации страници
+  var onPageActive = function () {
+    if (!document.querySelector('.map').classList.contains('map--faded')) {
       return;
     }
+    document.querySelector('.map').classList.remove('map--faded');
+    document.querySelector('.ad-form').classList.remove('ad-form--disabled');
+    window.util.fieldsets.forEach(function (element, i) {
+      window.util.fieldsets[i].removeAttribute('disabled', '');
+    });
+    window.load(showPins, window.showErrorMessage);
   };
-  // Закрытие карточки Popup по клику
-  map.addEventListener('click', function (evt) {
-    if (!evt.target.matches('button[type="button"]')) {
-      return;
+  //  Обработчик активации страницы по клику
+  window.util.mapPinMain.addEventListener('mousedown', onPageActive);
+
+  //  Обработчик активации страницы по Enter
+  window.util.mapPinMain.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === window.util.enterKeycode) {
+      onPageActive();
     }
-    map.removeChild(document.querySelector('article'));
-    map.removeEventListener('keydown', onPopupEscPress);
   });
-  //  Обработчик закрытия карточки Popup по Esc
-  document.addEventListener('keydown', onPopupEscPress);
 
   // Перемещение главной метки по карте
   window.util.mapPinMain.addEventListener('mousedown', function (evt) {

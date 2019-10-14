@@ -15,6 +15,14 @@
     }
   });
 
+  // var roomsToCapacity = {
+  //   '1':
+  //   '2':
+  //   '3':
+  //   '100':
+  // };
+
+
   //  В этом задании мы запрограммируем сценарий установки соответствия количества гостей с количеством комнат
   var roomsSelect = document.querySelector('select[name="rooms"]');
   var capacitySelect = document.querySelector('select[name="capacity"]');
@@ -80,7 +88,7 @@
     }
   });
 
-  //  3.5. Поля «Время заезда» и «Время выезда» синхронизированы.
+  //  Поля «Время заезда» и «Время выезда» синхронизированы.
   var timeIn = document.querySelector('select[name="timein"]');
   var timeOut = document.querySelector('select[name="timeout"]');
   timeIn.addEventListener('change', function () {
@@ -107,7 +115,6 @@
   //  Обработчик клика по кнопке "очистить"
   var formReset = document.querySelector('.ad-form__reset');
   var map = document.querySelector('.map');
-  //  var card = map.querySelector('.popup');
   var onFormResetClick = function () {
     onPageDisabled();
     document.querySelector('.ad-form').reset();
@@ -120,7 +127,7 @@
     if (map.querySelector('.popup') !== null) {
       map.removeChild(map.querySelector('.popup'));
     }
-    window.util.addressInput.removeAttribute('value');
+    //  window.util.addressInput.removeAttribute('value');
     window.util.addressInput.value = window.util.mapPinMainPositionX + ', ' + window.util.mapPinMainPositionY;
     window.util.mapPinMain.style.top = window.util.mainPinStartPositionY;
     window.util.mapPinMain.style.left = window.util.mainPinStartPositionX;
@@ -129,4 +136,60 @@
   formReset.addEventListener('click', function () {
     onFormResetClick();
   });
+
+  //  Закрытие сообщения об успешной отправке формы или об ошибке
+  var closeMessage = function (message) {
+    message.remove();
+  };
+
+  //  Функция показывающая сообщение об успешной отправке формы
+  var showSuccessMessage = function () {
+    var successMessageTemplate = document.querySelector('#success').content.querySelector('.success');
+    var successMessageElement = successMessageTemplate.cloneNode(true);
+
+    document.querySelector('main').insertAdjacentElement('afterbegin', successMessageElement);
+
+    var successMessage = document.querySelector('.success');
+    successMessage.addEventListener('click', function () {
+      closeMessage(successMessage);
+    });
+
+    document.addEventListener('keydown', function (evt) {
+      if (evt.keyCode === window.util.escKeycode) {
+        closeMessage(successMessage);
+        evt.preventDefault();
+      }
+    });
+  };
+
+  //  Функция показывающая сообщение об ошибке при отправке формы
+  window.showErrorMessage = function () {
+    var errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
+    var errorMessageElement = errorMessageTemplate.cloneNode(true);
+
+    document.querySelector('main').insertAdjacentElement('afterbegin', errorMessageElement);
+
+    var errorMessage = document.querySelector('.error');
+    errorMessage.addEventListener('click', function () {
+      closeMessage(errorMessage);
+    });
+
+    errorMessage.addEventListener('keydown', function (evt) {
+      if (evt.keyCode === window.util.escKeycode) {
+        closeMessage(errorMessage);
+        evt.preventDefault();
+      }
+    });
+  };
+
+  //  Отправка данных формы на сервер
+  var form = document.querySelector('.ad-form');
+  form.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    window.save(new FormData(form), function () {
+      onFormResetClick();
+      showSuccessMessage();
+    }, window.showErrorMessage);
+  });
+
 })();
