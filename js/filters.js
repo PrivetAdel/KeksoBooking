@@ -46,7 +46,7 @@
 
   var filterCheckedFeatures = function () {
     var checkedFeatures = [];
-    featuresCheckbox.forEach(function (checkbox) {
+    Array.from(housingFeatures.elements).forEach(function (checkbox) {
       if (checkbox.checked) {
         checkedFeatures.push(checkbox.value);
       }
@@ -56,7 +56,7 @@
 
   var contains = function (where, what) {
     for (var i = 0; i < what.length; i++) {
-      if (where.indexOf(what[i]) < 0) {
+      if (where.indexOf(what[i]) <= 0) {
         return false;
       }
     }
@@ -65,28 +65,22 @@
 
   var filterCheckbox = function (object) {
     var checkedFeatures = filterCheckedFeatures();
-    if (featuresCheckbox.checked) {
-      contains(object.offer.features, checkedFeatures);
-    }
-    return true;
+    contains(object.offer.features, checkedFeatures);
   };
 
   var allFilters = function () {
-    return window.map.receivedData.
-    filter(filterType).
-    filter(filterRooms).
-    filter(filterGuests).
-    filter(filterPrice).
-    filter(filterCheckbox);
+    return window.map.receivedData
+    .filter(filterType)
+    .filter(filterRooms)
+    .filter(filterGuests)
+    .filter(filterPrice)
+    .filter(filterCheckbox);
   };
 
   var getFilters = function () {
     window.form.removePins();
     window.form.removePopupCards();
     window.map.showPins(allFilters());
-
-    console.log(allFilters());
-    console.log(filterCheckedFeatures());
   };
 
   mapFilters.addEventListener('change', getFilters);
