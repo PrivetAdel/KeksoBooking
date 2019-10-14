@@ -9,15 +9,7 @@
   var housingPrice = filtersContainer.querySelector('#housing-price');
   var housingRooms = filtersContainer.querySelector('#housing-rooms');
   var housingGuests = filtersContainer.querySelector('#housing-guests');
-
   var housingFeatures = filtersContainer.querySelector('#housing-features');
-  var filterWifi = filtersContainer.querySelector('#filter-wifi');
-  var filterDishwasher = filtersContainer.querySelector('#filter-dishwasher');
-  var filterParking = filtersContainer.querySelector('#filter-parking');
-  var filterWasher = filtersContainer.querySelector('#filter-washer');
-  var filterElevator = filtersContainer.querySelector('#filter-elevator');
-  var filterConditioner = filtersContainer.querySelector('#filter-conditioner');
-  var featuresCheckbox = filtersContainer.querySelectorAll('input[type="checkbox"]');
 
   var filterType = function (object) {
     return (housingType.value === 'any') ? true : object.offer.type === housingType.value;
@@ -56,7 +48,7 @@
 
   var contains = function (where, what) {
     for (var i = 0; i < what.length; i++) {
-      if (where.indexOf(what[i]) <= 0) {
+      if (where.indexOf(what[i]) < 0) {
         return false;
       }
     }
@@ -65,7 +57,7 @@
 
   var filterCheckbox = function (object) {
     var checkedFeatures = filterCheckedFeatures();
-    contains(object.offer.features, checkedFeatures);
+    return contains(object.offer.features, checkedFeatures);
   };
 
   var allFilters = function () {
@@ -80,7 +72,7 @@
   var getFilters = function () {
     window.form.removePins();
     window.form.removePopupCards();
-    window.map.showPins(allFilters());
+    window.debounce(window.map.showPins(allFilters()));
   };
 
   mapFilters.addEventListener('change', getFilters);
