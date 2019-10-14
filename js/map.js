@@ -18,6 +18,16 @@
     for (var i = 0; i < data.length; i++) {
       receivedData.push(data[i]);
     }
+
+    //  Обработчик активации страницы по клику
+    window.util.mapPinMain.addEventListener('mousedown', onPageActive);
+
+    //  Обработчик активации страницы по Enter
+    window.util.mapPinMain.addEventListener('keydown', function (evt) {
+      if (evt.keyCode === window.util.enterKeycode) {
+        onPageActive();
+      }
+    });
   };
   window.backend.load(getData, window.showErrorMessage);
 
@@ -109,15 +119,6 @@
     showPins(receivedData);
 
   };
-  //  Обработчик активации страницы по клику
-  window.util.mapPinMain.addEventListener('mousedown', onPageActive);
-
-  //  Обработчик активации страницы по Enter
-  window.util.mapPinMain.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === window.util.enterKeycode) {
-      onPageActive();
-    }
-  });
 
   // Перемещение главной метки по карте
   window.util.mapPinMain.addEventListener('mousedown', function (evt) {
