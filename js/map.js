@@ -107,6 +107,7 @@
       window.util.fieldsets[i].removeAttribute('disabled', '');
     });
     showPins(receivedData);
+
   };
   //  Обработчик активации страницы по клику
   window.util.mapPinMain.addEventListener('mousedown', onPageActive);

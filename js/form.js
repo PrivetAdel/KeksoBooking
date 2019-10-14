@@ -15,6 +15,14 @@
     }
   });
 
+  // var roomsToCapacity = {
+  //   '1':
+  //   '2':
+  //   '3':
+  //   '100':
+  // };
+
+
   //  В этом задании мы запрограммируем сценарий установки соответствия количества гостей с количеством комнат
   var roomsSelect = document.querySelector('select[name="rooms"]');
   var capacitySelect = document.querySelector('select[name="capacity"]');
