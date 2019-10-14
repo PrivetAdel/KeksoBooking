@@ -10,6 +10,7 @@
   var PIN_HEIGHT = 40;
   var PHOTO_WIDTH = 45;
   var PHOTO_HEIGHT = 40;
+  var MAX_PINS_COUNT = 5;
   var MAIN_PIN_WIDTH = document.querySelector('.map__pin--main').offsetWidth;
   var MAIN_PIN_HEIGHT = document.querySelector('.map__pin--main').offsetHeight;
   var MAIN_PIN_ACTIVE_HEIGHT = document.querySelector('.map__pin--main').offsetHeight + 16;
@@ -168,6 +169,7 @@
     pinHeight: PIN_HEIGHT,
     photoWidth: PHOTO_WIDTH,
     photoHeight: PHOTO_HEIGHT,
+    maxPinsCount: MAX_PINS_COUNT,
     mainPinWidth: MAIN_PIN_WIDTH,
     mainPinHeight: MAIN_PIN_HEIGHT,
     mainPinActiveHeight: MAIN_PIN_ACTIVE_HEIGHT,

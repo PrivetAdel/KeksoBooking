@@ -12,6 +12,15 @@
     window.util.fieldsets[i].setAttribute('disabled', '');
   });
 
+  //  Записываем данные с сервера в переменную
+  var receivedData = [];
+  var getData = function (data) {
+    for (var i = 0; i < data.length; i++) {
+      receivedData.push(data[i]);
+    }
+  };
+  window.backend.load(getData, window.showErrorMessage);
+
   //  Пины. Создаем дом-элемент.
   var getPin = function (object) {
     var similarPinsTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
@@ -25,9 +34,7 @@
     pinElement.addEventListener('click', function () {
       var map = document.querySelector('.map');
       var filters = document.querySelector('.map__filters-container');
-      if (map.querySelector('article') !== null) {
-        map.removeChild(map.querySelector('article'));
-      }
+      window.form.removePopupCards();
       map.insertBefore(getAdt(object), filters);
     });
 
@@ -56,9 +63,7 @@
     //  Функция закрытия карточки объявления Popup по Esc
     var onPopupEscPress = function (evt) {
       if (evt.keyCode === window.util.escKeycode) {
-        if (adtElement !== null) {
-          adtElement.remove();
-        }
+        window.form.removePopupCards();
         return;
       }
     };
@@ -67,7 +72,7 @@
       if (!evt.target.matches('button[type="button"]')) {
         return;
       }
-      adtElement.remove();
+      window.form.removePopupCards();
       map.removeEventListener('keydown', onPopupEscPress);
     });
     //  Обработчик закрытия карточки объявления Popup по Esc
@@ -81,7 +86,9 @@
     var similarListElement = document.querySelector('.map__pins');
     var fragmentPins = document.createDocumentFragment();
 
-    for (var i = 0; i < pins.length; i++) {
+    var pinsCount = (pins.length > window.util.maxPinsCount) ? window.util.maxPinsCount : pins.length;
+
+    for (var i = 0; i < pinsCount; i++) {
       fragmentPins.appendChild(getPin(pins[i]));
     }
     similarListElement.appendChild(fragmentPins);
@@ -99,7 +106,8 @@
     window.util.fieldsets.forEach(function (element, i) {
       window.util.fieldsets[i].removeAttribute('disabled', '');
     });
-    window.load(showPins, window.showErrorMessage);
+    showPins(receivedData);
+
   };
   //  Обработчик активации страницы по клику
   window.util.mapPinMain.addEventListener('mousedown', onPageActive);
@@ -142,7 +150,7 @@
         x: moveEvt.clientX,
         y: moveEvt.clientY
       };
-
+      //  Фиксация граничных координат движения главной метки
       var getMapPinMainTop = function () {
         var mapPinMainTop = window.util.mapPinMain.offsetTop - shift.y;
         if (mapPinMainTop > (window.util.positionYMax - window.util.mainPinActiveHeight)) {
@@ -183,4 +191,10 @@
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
   });
+
+  window.map = {
+    receivedData: receivedData,
+    showPins: showPins,
+  };
+
 })();

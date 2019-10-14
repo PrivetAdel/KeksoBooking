@@ -26,35 +26,42 @@
   //  В этом задании мы запрограммируем сценарий установки соответствия количества гостей с количеством комнат
   var roomsSelect = document.querySelector('select[name="rooms"]');
   var capacitySelect = document.querySelector('select[name="capacity"]');
+  var maxValueMap = {
+    '1': 1, // capacitySelect index = 1
+    '2': 2, // capacitySelect index = 2
+    '3': 3, // capacitySelect index = 3
+    '100': 0, // capacitySelect index = 0
+  };
   roomsSelect.addEventListener('change', function () {
-    if (roomsSelect.value === '1') {
-      capacitySelect[0].setAttribute('disabled', '');
-      capacitySelect[1].setAttribute('disabled', '');
-      capacitySelect[2].removeAttribute('disabled', '');
-      capacitySelect[3].setAttribute('disabled', '');
+    var maxValue = parseInt(maxValueMap[roomsSelect.value], 10);
+    if (capacitySelect.value !== maxValue) {
+      capacitySelect.value = maxValue;
     }
-    if (roomsSelect.value === '2') {
-      capacitySelect[0].setAttribute('disabled', '');
-      capacitySelect[1].removeAttribute('disabled', '');
-      capacitySelect[2].removeAttribute('disabled', '');
-      capacitySelect[3].setAttribute('disabled', '');
-    }
-    if (roomsSelect.value === '3') {
+    if (maxValue === 0) {
       capacitySelect[0].removeAttribute('disabled', '');
-      capacitySelect[1].removeAttribute('disabled', '');
-      capacitySelect[2].removeAttribute('disabled', '');
-      capacitySelect[3].setAttribute('disabled', '');
-    }
-    if (roomsSelect.value === '100') {
-      capacitySelect[0].setAttribute('disabled', '');
       capacitySelect[1].setAttribute('disabled', '');
       capacitySelect[2].setAttribute('disabled', '');
+      capacitySelect[3].setAttribute('disabled', '');
+    }
+    if (maxValue === 1) {
+      capacitySelect[0].setAttribute('disabled', '');
+      capacitySelect[1].removeAttribute('disabled', '');
+      capacitySelect[2].setAttribute('disabled', '');
+      capacitySelect[3].setAttribute('disabled', '');
+    }
+    if (maxValue === 2) {
+      capacitySelect[0].setAttribute('disabled', '');
+      capacitySelect[1].removeAttribute('disabled', '');
+      capacitySelect[2].removeAttribute('disabled', '');
+      capacitySelect[3].setAttribute('disabled', '');
+    }
+    if (maxValue === 3) {
+      capacitySelect[0].setAttribute('disabled', '');
+      capacitySelect[1].removeAttribute('disabled', '');
+      capacitySelect[2].removeAttribute('disabled', '');
       capacitySelect[3].removeAttribute('disabled', '');
-      capacitySelect[3].setAttribute('selected', '');
-      capacitySelect[2].removeAttribute('selected', '');
     }
   });
-
   //  3.3. Поле «Тип жилья» влияет на минимальное значение поля «Цена за ночь»:
   var priceInput = document.querySelector('input[name="price"]');
   var type = document.querySelector('select[name="type"]');
@@ -98,43 +105,45 @@
     timeIn.value = timeOut.value;
   });
 
-  //  Функция деактивации страницы
-  var onPageDisabled = function () {
-    document.querySelector('.map').classList.add('map--faded');
-    document.querySelector('.ad-form').classList.add('ad-form--disabled');
+  //  Функция удаления пинов
+  var removePins = function () {
     var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
     pins.forEach(function (element, i) {
-      pins[i].classList.add('hidden');
+      pins[i].remove();
     });
+  };
+
+  //  Функция закрытия карточек объявления Popup
+  var removePopupCards = function () {
+    if (map.querySelector('.popup')) {
+      map.removeChild(map.querySelector('.popup'));
+    }
+  };
+
+  //  Функция деактивации страницы
+  var map = document.querySelector('.map');
+  var getDisabledPage = function () {
+    document.querySelector('.map').classList.add('map--faded');
+    document.querySelector('.ad-form').reset();
+    document.querySelector('.map__filters').reset();
+    document.querySelector('.ad-form').classList.add('ad-form--disabled');
+    removePins();
+    removePopupCards();
     window.util.fieldsets.forEach(function (element, i) {
       window.util.fieldsets[i].setAttribute('disabled', '');
     });
     window.util.mapPinMain.classList.remove('hidden');
-  };
-
-  //  Обработчик клика по кнопке "очистить"
-  var formReset = document.querySelector('.ad-form__reset');
-  var map = document.querySelector('.map');
-  var onFormResetClick = function () {
-    onPageDisabled();
-    document.querySelector('.ad-form').reset();
-    document.querySelector('.map__filters').reset();
     priceInput.placeholder = 1000;
-    capacitySelect[2].setAttribute('selected', '');
-    capacitySelect[2].removeAttribute('disabled', '');
-    capacitySelect[3].removeAttribute('selected', '');
-    capacitySelect[3].setAttribute('disabled', '');
-    if (map.querySelector('.popup') !== null) {
-      map.removeChild(map.querySelector('.popup'));
-    }
-    //  window.util.addressInput.removeAttribute('value');
     window.util.addressInput.value = window.util.mapPinMainPositionX + ', ' + window.util.mapPinMainPositionY;
     window.util.mapPinMain.style.top = window.util.mainPinStartPositionY;
     window.util.mapPinMain.style.left = window.util.mainPinStartPositionX;
   };
 
+  //  Обработчик клика по кнопке "очистить"
+  var formReset = document.querySelector('.ad-form__reset');
+
   formReset.addEventListener('click', function () {
-    onFormResetClick();
+    getDisabledPage();
   });
 
   //  Закрытие сообщения об успешной отправке формы или об ошибке
@@ -186,10 +195,18 @@
   var form = document.querySelector('.ad-form');
   form.addEventListener('submit', function (evt) {
     evt.preventDefault();
-    window.save(new FormData(form), function () {
-      onFormResetClick();
-      showSuccessMessage();
-    }, window.showErrorMessage);
+    window.backend.save(
+        new FormData(form),
+        function () {
+          getDisabledPage();
+          showSuccessMessage();
+        },
+        window.showErrorMessage
+    );
   });
 
+  window.form = {
+    removePins: removePins,
+    removePopupCards: removePopupCards,
+  };
 })();
