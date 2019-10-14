@@ -39,39 +39,6 @@
     }
   });
 
-  //  Функция создания массива из 8 сгенерированных JS объектов
-  var objects = [];
-  var getObjects = function () {
-    for (var i = 0; i < 8; i++) {
-      objects.push({
-        author: {
-          avatar: 'img/avatars/user0' + (i + 1).toString() + '.png',
-        },
-
-        offer: {
-          title: 'заголовок предложения',
-          address: '600, 350',
-          price: 1000,
-          type: window.util.getRandomElement(window.util.typesArray),
-          rooms: window.util.getRandomInteger(1, 5),
-          guests: 3,
-          checkin: window.util.getRandomInteger(12, 14).toString() + ':00',
-          checkout: window.util.getRandomInteger(12, 14).toString() + ':00',
-          features: window.util.getRandomPrefix(window.util.featuresArray),
-          description: 'строка с описанием',
-          photos: window.util.getRandomPrefix(window.util.photosArray),
-        },
-
-        location: {
-          x: window.util.getRandomInteger(0, positionXMax) - (window.util.pinWidth / 2),
-          y: window.util.getRandomInteger(window.util.positionYMin, window.util.positionYMax) - window.util.pinHeight,
-        }
-      });
-    }
-    return objects;
-  };
-  getObjects();
-
   //  Пины. Создаем дом-элемент.
   var getPin = function (object) {
     var similarPinsTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
@@ -84,18 +51,26 @@
     return pinElement;
   };
   //  Находим шаблон пина и добавляем его на страницу 8 раз.
-  var showPins = function () {
+  var showPins = function (pins) {
     var similarListElement = document.querySelector('.map__pins');
     var fragmentPins = document.createDocumentFragment();
 
-    for (var i = 0; i < objects.length; i++) {
-      fragmentPins.appendChild(getPin(objects[i]));
+    for (var i = 0; i < pins.length; i++) {
+      fragmentPins.appendChild(getPin(pins[i]));
     }
     similarListElement.appendChild(fragmentPins);
 
     return similarListElement;
   };
-  showPins();
+
+  var errorHandler = function () {
+    var errorTemplate = document.querySelector('#error').content.querySelector('.error');
+    var errorElement = errorTemplate.cloneNode(true);
+
+    document.querySelector('main').insertAdjacentElement('afterbegin', errorElement);
+  };
+
+  window.load(showPins, errorHandler);
 
   //  Карточка объявления Popup. Создаем дом-элемент.
   var getAdt = function (object) {
@@ -120,31 +95,44 @@
   // Открытие карточки Popup
   var map = document.querySelector('.map');
   var filters = document.querySelector('.map__filters-container');
-  var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+
   // Открытие карточки Popup по клику
-  objects.forEach(function (element, i) {
-    pins[i].addEventListener('click', function () {
-      map.insertBefore(getAdt(objects[i]), filters);
-      document.addEventListener('keydown', onPopupEscPress);
+  var showCards = function (cards) {
+    var mapPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+    cards.forEach(function (element, i) {
+      mapPins[i].addEventListener('click', function () {
+        if (map.querySelector('article') !== null) {
+          map.removeChild(map.querySelector('article'));
+        }
+        map.insertBefore(getAdt(cards[i]), filters);
+      });
     });
-  });
+  };
+  window.load(showCards, errorHandler);
   // Открытие карточки Popup по Enter
-  objects.forEach(function (element, i) {
-    pins[i].addEventListener('keydown', function (evt) {
-      if (evt.keyCode === window.util.enterKeycode) {
-        map.insertBefore(getAdt(objects[0]), filters);
-      }
-      document.addEventListener('keydown', onPopupEscPress);
+  var showCardsOnEnter = function (cards) {
+    var mapPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+    cards.forEach(function (element, i) {
+      mapPins[i].addEventListener('keydown', function (evt) {
+        if (evt.keyCode === window.util.enterKeycode) {
+          evt.preventDefault();
+          if (map.querySelector('article') !== null) {
+            map.removeChild(map.querySelector('article'));
+          }
+          map.insertBefore(getAdt(cards[i]), filters);
+        }
+      });
     });
-  });
+  };
+  window.load(showCardsOnEnter, errorHandler);
 
   //  Функция закрытия карточки Popup по Esc
   var onPopupEscPress = function (evt) {
     if (evt.keyCode === window.util.escKeycode) {
-      if (!evt.target.matches('button[type="button"]')) {
-        return;
+      if (map.querySelector('article') !== null) {
+        map.removeChild(map.querySelector('article'));
       }
-      map.removeChild(document.querySelector('article'));
+      return;
     }
   };
   // Закрытие карточки Popup по клику
@@ -156,7 +144,7 @@
     map.removeEventListener('keydown', onPopupEscPress);
   });
   //  Обработчик закрытия карточки Popup по Esc
-  map.addEventListener('keydown', onPopupEscPress);
+  document.addEventListener('keydown', onPopupEscPress);
 
   // Перемещение главной метки по карте
   window.util.mapPinMain.addEventListener('mousedown', function (evt) {
