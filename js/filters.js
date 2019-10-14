@@ -1,6 +1,8 @@
 'use strict';
 
 (function () {
+  var MAX_PRICE = 50000;
+  var MIN_PRICE = 10000;
   var filtersContainer = document.querySelector('.map__filters-container');
   var mapFilters = filtersContainer.querySelector('.map__filters');
   var housingType = filtersContainer.querySelector('#housing-type');
@@ -29,23 +31,44 @@
     return (housingGuests.value === 'any') ? true : object.offer.guests === parseInt(housingGuests.value, 10);
   };
 
+  var filterPrice = function (object) {
+    switch (housingPrice.value) {
+      case 'low':
+        return (object.offer.price < MIN_PRICE);
+      case 'middle':
+        return ((object.offer.price >= MIN_PRICE) && (object.offer.price <= MAX_PRICE));
+      case 'high':
+        return (object.offer.price > MAX_PRICE);
+      default:
+        return true;
+    }
+  };
 
-  var filterFeaturesChecked = function () {
-    var featuresChecked = [];
+  var filterCheckedFeatures = function () {
+    var checkedFeatures = [];
     featuresCheckbox.forEach(function (checkbox) {
       if (checkbox.checked) {
-        featuresChecked.push(checkbox.value)
+        checkedFeatures.push(checkbox.value);
       }
     });
-    return featuresChecked;
+    return checkedFeatures;
+  };
+
+  var contains = function (where, what) {
+    for (var i = 0; i < what.length; i++) {
+      if (where.indexOf(what[i]) < 0) {
+        return false;
+      }
+    }
+    return true;
   };
 
   var filterCheckbox = function (object) {
+    var checkedFeatures = filterCheckedFeatures();
     if (featuresCheckbox.checked) {
-      var featuresChecked = filterFeaturesChecked();
-      featuresChecked.every(element => object.offer.features.indexOf(element) > 0);
+      contains(object.offer.features, checkedFeatures);
     }
-      return true;
+    return true;
   };
 
   var allFilters = function () {
@@ -53,8 +76,9 @@
     filter(filterType).
     filter(filterRooms).
     filter(filterGuests).
+    filter(filterPrice).
     filter(filterCheckbox);
-  }
+  };
 
   var getFilters = function () {
     window.form.removePins();
@@ -62,7 +86,7 @@
     window.map.showPins(allFilters());
 
     console.log(allFilters());
-    console.log(filterFeaturesChecked());
+    console.log(filterCheckedFeatures());
   };
 
   mapFilters.addEventListener('change', getFilters);
