@@ -41,7 +41,6 @@
     });
 
     xhr.timeout = 5000; // 5s
-
     xhr.open('GET', URL_DATA);
     xhr.send();
   };

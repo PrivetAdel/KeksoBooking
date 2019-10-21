@@ -165,6 +165,7 @@
 
     roomsArray: ROOMS,
     guestsArray: GUESTS,
+    
     tipeToPrice: tipeToPrice,
 
     shuffle: shuffle,

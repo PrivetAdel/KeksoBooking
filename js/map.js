@@ -162,6 +162,7 @@
         x: moveEvt.clientX,
         y: moveEvt.clientY
       };
+
       //  Фиксация граничных координат движения главной метки по высоте
       var setMapPinMainTop = function () {
         var mapPinMainTop = window.util.mapPinMain.offsetTop - shift.y;
@@ -184,7 +185,6 @@
         }
         return mapPinMainLeft;
       };
-
 
       window.util.mapPinMain.style.top = setMapPinMainTop() + 'px';
       window.util.mapPinMain.style.left = setMapPinMainLeft() + 'px';

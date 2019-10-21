@@ -56,6 +56,7 @@
       capacitySelect[3].removeAttribute('disabled', '');
     }
   });
+  
   //  Соответствие значения поля «Тип жилья» и минимального значения поля «Цена за ночь»:
   var priceInput = document.querySelector('input[name="price"]');
   var type = document.querySelector('select[name="type"]');
@@ -156,12 +157,10 @@
     capacitySelect[1].removeAttribute('disabled', '');
     capacitySelect[2].setAttribute('disabled', '');
     capacitySelect[3].setAttribute('disabled', '');
-
   };
 
   //  Обработчик клика по кнопке "очистить"
   var formReset = document.querySelector('.ad-form__reset');
-
   formReset.addEventListener('click', pageDisabledHandler);
 
   //  Закрытие сообщения об успешной отправке формы или об ошибке
