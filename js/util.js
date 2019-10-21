@@ -20,33 +20,12 @@
   //  Переменные
   var mapPinMain = document.querySelector('.map__pin--main');
   var fieldsets = document.querySelectorAll('fieldset');
-  var addressInput = document.querySelector('input[name = address]');
+  var addressInput = document.querySelector('input[name = "address"]');
   var mapPinMainPositionX = Math.round(mapPinMain.offsetLeft + (MAIN_PIN_WIDTH / 2));
   var mapPinMainPositionY = Math.round(mapPinMain.offsetTop + (MAIN_PIN_HEIGHT / 2));
+  var positionXMax = document.querySelector('.map').clientWidth;
 
   //  Мокки
-  var TYPES = [
-    'palace',
-    'flat',
-    'house',
-    'bungalo',
-  ];
-
-  var FEATURES = [
-    'wifi',
-    'dishwasher',
-    'parking',
-    'washer',
-    'elevator',
-    'conditioner',
-  ];
-
-  var PHOTOS = [
-    'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
-    'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
-    'http://o0.github.io/assets/images/tokyo/hotel3.jpg',
-  ];
-
   var ROOMS = [
     'комната',
     'комнаты',
@@ -59,7 +38,8 @@
     'гостей',
   ];
 
-  var PRICE = {
+  // Словарь
+  var tipeToPrice = {
     'bungalo': 0,
     'flat': 1000,
     'house': 5000,
@@ -181,14 +161,12 @@
     addressInput: addressInput,
     mapPinMainPositionX: mapPinMainPositionX,
     mapPinMainPositionY: mapPinMainPositionY,
+    positionXMax: positionXMax,
 
-
-    typesArray: TYPES,
-    featuresArray: FEATURES,
-    photosArray: PHOTOS,
     roomsArray: ROOMS,
     guestsArray: GUESTS,
-    priceObject: PRICE,
+    
+    tipeToPrice: tipeToPrice,
 
     shuffle: shuffle,
     getRandomPrefix: getRandomPrefix,
