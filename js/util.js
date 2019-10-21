@@ -176,4 +176,5 @@
     getPhotos: getPhotos,
     connectNounAndNumbers: connectNounAndNumbers,
   };
+
 })();

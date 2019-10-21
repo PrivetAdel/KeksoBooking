@@ -20,12 +20,14 @@
   //  Соответствие количества гостей с количеством комнат
   var roomsSelect = document.querySelector('select[name="rooms"]');
   var capacitySelect = document.querySelector('select[name="capacity"]');
+  //  Соответствие количества комнат и максимального количества гостей
   var maxValueMap = {
     '1': 1,
     '2': 2,
     '3': 3,
     '100': 0,
   };
+
   roomsSelect.addEventListener('change', function () {
     var maxValue = parseInt(maxValueMap[roomsSelect.value], 10);
     if (capacitySelect.value !== maxValue) {
@@ -121,7 +123,7 @@
     });
   };
 
-  //  Функция удаления пинов
+  //  Функция удаления пинов с карты
   var removePins = function () {
     var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
     pins.forEach(function (element, i) {
@@ -156,12 +158,10 @@
     capacitySelect[1].removeAttribute('disabled', '');
     capacitySelect[2].setAttribute('disabled', '');
     capacitySelect[3].setAttribute('disabled', '');
-
   };
 
   //  Обработчик клика по кнопке "очистить"
   var formReset = document.querySelector('.ad-form__reset');
-
   formReset.addEventListener('click', pageDisabledHandler);
 
   //  Закрытие сообщения об успешной отправке формы или об ошибке

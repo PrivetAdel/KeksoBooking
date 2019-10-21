@@ -3,6 +3,7 @@
 (function () {
   var MAX_PRICE = 50000;
   var MIN_PRICE = 10000;
+
   var filtersContainer = document.querySelector('.map__filters-container');
   var mapFilters = filtersContainer.querySelector('.map__filters');
   var housingType = filtersContainer.querySelector('#housing-type');
