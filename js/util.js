@@ -165,7 +165,7 @@
 
     roomsArray: ROOMS,
     guestsArray: GUESTS,
-    
+
     tipeToPrice: tipeToPrice,
 
     shuffle: shuffle,
@@ -177,4 +177,5 @@
     getPhotos: getPhotos,
     connectNounAndNumbers: connectNounAndNumbers,
   };
+
 })();

@@ -56,7 +56,7 @@
       capacitySelect[3].removeAttribute('disabled', '');
     }
   });
-  
+
   //  Соответствие значения поля «Тип жилья» и минимального значения поля «Цена за ночь»:
   var priceInput = document.querySelector('input[name="price"]');
   var type = document.querySelector('select[name="type"]');
