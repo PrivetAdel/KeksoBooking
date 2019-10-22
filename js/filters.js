@@ -12,15 +12,24 @@
   var housingFeatures = filtersContainer.querySelector('#housing-features');
 
   var filterType = function (object) {
-    return (housingType.value === 'any') ? true : object.offer.type === housingType.value;
+    return (
+      housingType.value === 'any' ||
+      object.offer.type === housingType.value
+    );
   };
 
   var filterRooms = function (object) {
-    return (housingRooms.value === 'any') ? true : object.offer.rooms === parseInt(housingRooms.value, 10);
+    return (
+      housingRooms.value === 'any' ||
+      object.offer.rooms === parseInt(housingRooms.value, 10)
+    );
   };
 
   var filterGuests = function (object) {
-    return (housingGuests.value === 'any') ? true : object.offer.guests === parseInt(housingGuests.value, 10);
+    return (
+      housingGuests.value === 'any' ||
+      object.offer.guests === parseInt(housingGuests.value, 10)
+    );
   };
 
   var filterPrice = function (object) {
