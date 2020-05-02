@@ -2,8 +2,8 @@
 
 (function () {
   var STATUS_SUCCESS = 200;
-  var URL = 'https://js.dump.academy/keksobooking';
-  var URL_DATA = 'https://js.dump.academy/keksobooking/data';
+  var URL = 'https://javascript.pages.academy/keksobooking';
+  var URL_DATA = 'https://javascript.pages.academy/keksobooking/data';
   //  Отправка данных на сервер
   var save = function (data, successHandler, errorHandler) {
     var xhr = new XMLHttpRequest();
