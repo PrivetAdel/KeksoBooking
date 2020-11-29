@@ -106,6 +106,7 @@
   avatarChooser.addEventListener('change', function () {
     window.loadFiles.setPicture(avatarChooser, true, avatarPreview);
   });
+
   //  Добавление фотографий
   var photoChooser = document.querySelector('.ad-form__upload input[type="file"]');
   photoChooser.addEventListener('change', function () {
@@ -113,6 +114,7 @@
     window.loadFiles.setPicture(photoChooser, false, photoPreview);
     document.querySelector('.ad-form__photo').appendChild(photoPreview);
   });
+
   //  Удаление аватарки и фотографий
   var resetPicture = function () {
     avatarPreview.src = DEFAULT_AVATAR;
@@ -150,7 +152,8 @@
     window.util.mapPinMain.classList.remove('hidden');
     priceInput.placeholder = 1000;
     window.map.setMainPinCoordinates();
-    window.map.getDisabledFieldsets();
+    window.map.disableForm(window.util.form.elements, true);
+    window.map.disableForm(window.util.mapFilters.elements, true);
     window.util.mapPinMain.style.top = window.util.mainPinStartPositionY;
     window.util.mapPinMain.style.left = window.util.mainPinStartPositionX;
     capacitySelect[0].setAttribute('disabled', '');

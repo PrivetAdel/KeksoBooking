@@ -19,7 +19,8 @@
 
   //  Переменные
   var mapPinMain = document.querySelector('.map__pin--main');
-  var fieldsets = document.querySelectorAll('fieldset');
+  var form = document.querySelector('.ad-form');
+  var mapFilters = document.querySelector('.map__filters');
   var addressInput = document.querySelector('input[name = "address"]');
   var mapPinMainPositionX = Math.round(mapPinMain.offsetLeft + (MAIN_PIN_WIDTH / 2));
   var mapPinMainPositionY = Math.round(mapPinMain.offsetTop + (MAIN_PIN_HEIGHT / 2));
@@ -157,7 +158,8 @@
     mainPinStartPositionY: MAIN_PIN_START_POSITION_Y,
 
     mapPinMain: mapPinMain,
-    fieldsets: fieldsets,
+    form: form,
+    mapFilters: mapFilters,
     addressInput: addressInput,
     mapPinMainPositionX: mapPinMainPositionX,
     mapPinMainPositionY: mapPinMainPositionY,
@@ -177,5 +179,4 @@
     getPhotos: getPhotos,
     connectNounAndNumbers: connectNounAndNumbers,
   };
-
 })();

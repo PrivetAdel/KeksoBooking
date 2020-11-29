@@ -367,7 +367,6 @@ fieldset {
 
   font-size: 14px;
   vertical-align: middle;
-  cursor: pointer;
 
   border: 1px solid transparent;
 }
@@ -391,7 +390,6 @@ fieldset {
 
   font-size: 0;
   vertical-align: middle;
-  cursor: pointer;
 
   background-color: #f8f8f8;
   background-image: url("../img/sprite-feature.svg");
@@ -400,6 +398,11 @@ fieldset {
   background-size: 25px 345px;
 
   border-radius: 3px;
+}
+
+.map__checkbox:not([disabled]) ~ label,
+.map__filter:not([disabled]) {
+  cursor: pointer;
 }
 
 .map__feature--wifi {
@@ -564,12 +567,12 @@ fieldset {
 
   border: dashed 1px #c7c7c7;
   border-radius: 5px;
-
-  cursor: pointer;
 }
 
-.ad-form-header__drop-zone:hover {
+.ad-form-header__input:not([disabled]) ~ label:hover {
   color: #ff5635;
+
+  cursor: pointer;
 }
 
 .ad-form-header__drop-zone:focus,
@@ -614,9 +617,9 @@ fieldset {
   border-radius: 4px;
 }
 
-.ad-form__element input:hover,
-.ad-form__element select:hover,
-.ad-form__element textarea:hover {
+.ad-form__element input:not([disabled]):hover,
+.ad-form__element select:not([disabled]):hover,
+.ad-form__element textarea:not([disabled]):hover {
   border-color: #ffaa99;
 }
 
@@ -663,16 +666,16 @@ fieldset {
   background-position: center;
   background-repeat: no-repeat;
   background-size: 35px 600px;
-
-  cursor: pointer;
 }
 
-.feature:hover {
+.feature__checkbox:not([disabled]) ~ label:hover {
   -webkit-box-shadow: inset 0 0 0 1px #ffaa99;
           box-shadow: inset 0 0 0 1px #ffaa99;
+
+          cursor: pointer;
 }
 
-.feature:active {
+.feature__checkbox:not([disabled]) ~ label:active {
   -webkit-box-shadow: none;
           box-shadow: none;
   background-color: #ff6547;
@@ -790,12 +793,12 @@ fieldset {
 
   border: dashed 1px #c7c7c7;
   border-radius: 5px;
-
-  cursor: pointer;
 }
 
-.ad-form__drop-zone:hover {
+.ad-form__input:not([disabled]) ~ label:hover {
   color: #ff5635;
+
+  cursor: pointer;
 }
 
 .ad-form__drop-zone:focus,
@@ -839,8 +842,8 @@ fieldset {
   border-radius: 8px;
 }
 
-.ad-form__submit:hover,
-.ad-form__submit:focus {
+.ad-form__submit:not([disabled]):hover,
+.ad-form__submit:not([disabled]):focus {
   border-color: #ff6d51;
 }
 
@@ -868,7 +871,7 @@ fieldset {
   cursor: pointer;
 }
 
-.ad-form__reset:focus {
+.ad-form__reset:not([disabled]):focus {
   outline: none;
   -webkit-box-shadow: 0 0 2px 2px #ff6547;
           box-shadow: 0 0 2px 2px #ff6547;

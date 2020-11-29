@@ -9,13 +9,14 @@
   };
   setMainPinCoordinates();
 
-  //  Добавляем через DOM-операции fieldset атрибут disabled
-  var getDisabledFieldsets = function () {
-    window.util.fieldsets.forEach(function (element, i) {
-      window.util.fieldsets[i].setAttribute('disabled', '');
-    });
+  //  Добавляем всем элементам формы атрибут disabled
+  var disableForm = function (collection, boolean) {
+    for (var i = 0; i < collection.length; i++) {
+      collection[i].disabled = boolean;
+    }
   };
-  getDisabledFieldsets();
+  disableForm(window.util.form.elements, true);
+  disableForm(window.util.mapFilters.elements, true);
 
   //  Записываем данные с сервера в переменную
   var receivedData = [];
@@ -36,7 +37,7 @@
   };
   window.backend.load(setData, window.form.showErrorMessage);
 
-  //  Пины. Создаем дом-элемент.
+  //  Пины. Создаем дом-элемент
   var getPin = function (object) {
     var similarPinsTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 
@@ -125,9 +126,9 @@
     }
     map.classList.remove('map--faded');
     document.querySelector('.ad-form').classList.remove('ad-form--disabled');
-    window.util.fieldsets.forEach(function (element, i) {
-      window.util.fieldsets[i].removeAttribute('disabled', '');
-    });
+    disableForm(window.util.form.elements, false);
+    disableForm(window.util.mapFilters.elements, false);
+
     showPins(receivedData);
   };
 
@@ -207,7 +208,7 @@
 
   window.map = {
     setMainPinCoordinates: setMainPinCoordinates,
-    getDisabledFieldsets: getDisabledFieldsets,
+    disableForm: disableForm,
     receivedData: receivedData,
     showPins: showPins,
   };
